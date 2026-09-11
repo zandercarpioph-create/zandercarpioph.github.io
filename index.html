@@ -101,10 +101,12 @@
       <div class="mono-label">Selected work</div>
       <h2>The work, and the checks that made me trust it</h2>
       <p>
-        Coursework, thesis and group research in mathematical modelling and
-        applied statistics. Every figure is generated from the underlying model
-        or dataset rather than drawn by hand, and the first two projects include
-        interactive panels so the data and the dynamics can be explored directly.
+        Thesis, coursework and group research in mathematical modelling and
+        applied statistics, newest work first apart from the dengue study, which
+        leads because it is the most complete. Every figure is generated from the
+        underlying model or dataset rather than drawn by hand, and two of the
+        projects carry interactive panels so the data and the dynamics can be
+        explored directly.
       </p>
     </div>
 
@@ -112,7 +114,7 @@
     <article class="project reveal">
       <div class="project-body">
         <h3>Dengue surveillance, Baguio City</h3>
-        <div class="meta">R &middot; QGIS &middot; Spatiotemporal analysis</div>
+        <div class="meta"><span class="yr">Jan 2024</span> <span>R &middot; QGIS &middot; Spatiotemporal analysis</span></div>
         <p>
           Barangay-level dengue surveillance across <strong>127 barangays</strong>,
           joined on PSGC codes and originally mapped in QGIS. The record supplied
@@ -209,11 +211,61 @@
       </div>
     </article>
 
-    <!-- ======================== compartmental lab ======================== -->
+    <!-- ============================= kaprekar ============================ -->
     <article class="project flip reveal">
       <div class="project-body">
+        <h3>Kaprekar triples, undergraduate thesis</h3>
+        <div class="meta"><span class="yr live">2026, ongoing</span> <span>Number theory &middot; PARI/GP &middot; LaTeX</span></div>
+        <p>
+          Extending Iannucci and Foster's 2005 work on Kaprekar triples: integers
+          whose cube splits into three blocks that sum back to the original number.
+          8 is the smallest, because 8<sup>3</sup> = 512 splits as 5, 1 and 2.
+        </p>
+        <p>
+          The central result turns an infinite search into a finite one. Every
+          triple has to be a root of a congruence, which replaces a sweep over
+          all of 10<sup>n</sup> with a handful of candidates decided by one cube
+          and two divisions.
+        </p>
+        <p>
+          What falls out is periodic. Because 10 has order 81 modulo 3<sup>6</sup>,
+          the answer for a power of ten depends only on
+          <strong>n mod 81</strong>. Of the 54 classes the theorem covers, the
+          count <strong>never exceeds four</strong>, reaches four in only two of
+          them, and <strong>eleven classes admit no triple at all</strong>. The
+          grid is the whole theorem in one picture.
+        </p>
+        <p>
+          I work to a rule on this project: nothing counts until two separately
+          written programs agree on it. That caught a counting error in my own
+          code which had understated a maximum by a third. The program carries a
+          self-test that runs before anything is trusted, and the class counts
+          are cross-checked against brute-force enumeration for the small
+          exponents where a cube still fits in a double.
+        </p>
+        <div class="tags">
+          <span class="tag">PARI/GP</span><span class="tag">R</span>
+          <span class="tag">LaTeX</span><span class="tag">Primality proving</span>
+        </div>
+      </div>
+      <div class="project-media">
+        <figure class="panel">
+          <img src="assets/img/fig-kaprekar.png" alt="A nine by nine grid of the residue classes modulo 81, each cell shaded by how many Kaprekar triples that class admits, with the two classes reaching four outlined and the classes divisible by three greyed out.">
+          <figcaption>
+            Produced by <code>kt_period_table()</code> in the thesis PARI/GP
+            program, re-run by the figure script so the grid cannot drift from
+            the source. The interval of classes divisible by three lies outside
+            the theorem and is left grey.
+          </figcaption>
+        </figure>
+      </div>
+    </article>
+
+    <!-- ======================== compartmental lab ======================== -->
+    <article class="project reveal">
+      <div class="project-body">
         <h3>Compartmental epidemic models</h3>
-        <div class="meta">R &middot; deSolve &middot; Shiny &middot; Live in browser</div>
+        <div class="meta"><span class="yr">May 2026</span> <span>R &middot; deSolve &middot; Shiny</span></div>
         <p>
           SIR and SEIR systems with mass-action incidence, integrated with
           <code>deSolve</code> in R and wrapped in Shiny so the parameters can be
@@ -276,10 +328,10 @@
     </article>
 
     <!-- ============================== cholera ============================= -->
-    <article class="project reveal">
+    <article class="project flip reveal">
       <div class="project-body">
         <h3>Cholera transmission with an environmental reservoir</h3>
-        <div class="meta">R &middot; MATLAB &middot; Shiny</div>
+        <div class="meta"><span class="yr">May 2026</span> <span>R &middot; MATLAB &middot; Shiny</span></div>
         <p>
           An SEIRB model in which cholera spreads two ways at once: directly
           between people, and indirectly through a reservoir of bacteria in
@@ -313,61 +365,11 @@
       </div>
     </article>
 
-    <!-- ============================= kaprekar ============================ -->
-    <article class="project flip reveal">
-      <div class="project-body">
-        <h3>Kaprekar triples, undergraduate thesis</h3>
-        <div class="meta">Number theory &middot; PARI/GP &middot; LaTeX</div>
-        <p>
-          Extending Iannucci and Foster's 2005 work on Kaprekar triples: integers
-          whose cube splits into three blocks that sum back to the original number.
-          8 is the smallest, because 8<sup>3</sup> = 512 splits as 5, 1 and 2.
-        </p>
-        <p>
-          The central result turns an infinite search into a finite one. Every
-          triple has to be a root of a congruence, which replaces a sweep over
-          all of 10<sup>n</sup> with a handful of candidates decided by one cube
-          and two divisions.
-        </p>
-        <p>
-          What falls out is periodic. Because 10 has order 81 modulo 3<sup>6</sup>,
-          the answer for a power of ten depends only on
-          <strong>n mod 81</strong>. Of the 54 classes the theorem covers, the
-          count <strong>never exceeds four</strong>, reaches four in only two of
-          them, and <strong>eleven classes admit no triple at all</strong>. The
-          grid is the whole theorem in one picture.
-        </p>
-        <p>
-          I work to a rule on this project: nothing counts until two separately
-          written programs agree on it. That caught a counting error in my own
-          code which had understated a maximum by a third. The program carries a
-          self-test that runs before anything is trusted, and the class counts
-          are cross-checked against brute-force enumeration for the small
-          exponents where a cube still fits in a double.
-        </p>
-        <div class="tags">
-          <span class="tag">PARI/GP</span><span class="tag">R</span>
-          <span class="tag">LaTeX</span><span class="tag">Primality proving</span>
-        </div>
-      </div>
-      <div class="project-media">
-        <figure class="panel">
-          <img src="assets/img/fig-kaprekar.png" alt="A nine by nine grid of the residue classes modulo 81, each cell shaded by how many Kaprekar triples that class admits, with the two classes reaching four outlined and the classes divisible by three greyed out.">
-          <figcaption>
-            Produced by <code>kt_period_table()</code> in the thesis PARI/GP
-            program, re-run by the figure script so the grid cannot drift from
-            the source. The interval of classes divisible by three lies outside
-            the theorem and is left grey.
-          </figcaption>
-        </figure>
-      </div>
-    </article>
-
     <!-- ============================= kuramoto ============================ -->
     <article class="project reveal">
       <div class="project-body">
         <h3>Kuramoto synchronisation</h3>
-        <div class="meta">Python &middot; Jupyter &middot; R</div>
+        <div class="meta"><span class="yr">May 2026</span> <span>Python &middot; Jupyter</span></div>
         <p>
           Coupled-oscillator dynamics: a population of oscillators, each with its
           own natural frequency, pulled toward one another by a coupling term.

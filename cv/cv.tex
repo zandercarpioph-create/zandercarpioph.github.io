@@ -32,8 +32,8 @@
   {\small\textcolor{accent}{#2}}\\[2pt]
 }
 
-\newcommand{\proj}[2]{%
-  \textbf{#1}\ \ {\small\textcolor{muted}{#2}}\\[1pt]
+\newcommand{\proj}[3]{%
+  \textbf{#1}\ \ {\small\textcolor{muted}{#2}}\hfill{\small\textcolor{muted}{#3}}\\[1pt]
 }
 
 \begin{document}
@@ -102,7 +102,7 @@ design and content produced in house. Client names withheld.}
 \section{Quantitative Projects}
 
 {\small
-\proj{Dengue surveillance analysis, Baguio City}{R, QGIS}
+\proj{Dengue surveillance analysis, Baguio City}{R, QGIS}{Jan 2024}
 Reconstructed barangay-level surveillance across 127 barangays and 23 reporting
 weeks, joined on PSGC codes and mapped as a choropleth. Showed the burden is
 concentrated rather than citywide, the worst tenth of barangays carrying 32\% of
@@ -113,19 +113,19 @@ understates the at-risk daytime population enough to yield nominal rates above
 4,000 per 1,000.
 
 \vspace{4pt}
-\proj{Compartmental epidemic models}{R, deSolve, Shiny}
+\proj{Compartmental epidemic models}{R, deSolve, Shiny}{May 2026}
 SIR and SEIR systems with mass-action incidence, integrated with \texttt{deSolve}
 and published as interactive Shiny applications in which the parameters can be
 varied and the epidemic curve re-solved.
 
 \vspace{4pt}
-\proj{Cholera transmission with an environmental reservoir}{R, MATLAB}
+\proj{Cholera transmission with an environmental reservoir}{R, MATLAB}{May 2026}
 SEIRB model coupling direct transmission to a bacterial reservoir, built as a
 797-line Shiny application with fourteen tunable parameters and cross-implemented
 in MATLAB.
 
 \vspace{4pt}
-\proj{Kaprekar triples, undergraduate thesis}{PARI/GP, LaTeX}
+\proj{Kaprekar triples, undergraduate thesis}{PARI/GP, LaTeX}{2026, ongoing}
 Extending Iannucci and Foster (2005). Reduced an infinite search to a finite one by
 proving every triple is a root of a congruence, bounding the count at four per power
 of ten. Worked to a rule that no result counts until two independently written

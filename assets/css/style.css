@@ -220,6 +220,16 @@ section.tinted { background: var(--bg-alt); border-block: 1px solid var(--line-s
 .project-body .meta {
   font-family: var(--mono); font-size: .715rem; letter-spacing: .1em;
   text-transform: uppercase; color: var(--faint); margin-bottom: 16px;
+  display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+}
+.project-body .meta .yr {
+  color: var(--accent); font-weight: 500;
+  padding-right: 10px; border-right: 1px solid var(--line);
+}
+.project-body .meta .yr.live::after {
+  content: ""; display: inline-block; width: 5px; height: 5px;
+  border-radius: 50%; background: var(--accent); margin-left: 7px;
+  vertical-align: middle;
 }
 .project-body p { margin: 0 0 15px; color: var(--muted); }
 .project-body p.note {
