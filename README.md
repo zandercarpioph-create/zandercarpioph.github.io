@@ -63,3 +63,13 @@ assets/data/dengue.json   aggregates for the interactive chart
 scripts/make_figures.R    regenerates every figure and the data file
 scripts/serve.ps1         local static preview server
 ```
+
+## Curriculum vitae
+
+`cv/cv.tex` builds to `assets/cv/cv.pdf`, which the site links for download.
+
+```
+tectonic cv/cv.tex --outdir assets/cv
+```
+
+Phone number is deliberately omitted from the public CV; email and LinkedIn only.

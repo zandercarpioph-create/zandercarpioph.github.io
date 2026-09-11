@@ -1,0 +1,142 @@
+% Zander Carpio, curriculum vitae.
+% Build:  tectonic cv/cv.tex --outdir assets/cv
+\documentclass[10pt,a4paper]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[margin=0.6in]{geometry}
+\usepackage{titlesec}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage{array}
+\usepackage[hidelinks]{hyperref}
+
+\definecolor{ink}{HTML}{111C2E}
+\definecolor{accent}{HTML}{C2410C}
+\definecolor{muted}{HTML}{56657A}
+
+\color{ink}
+\pagestyle{empty}
+\setlength{\parindent}{0pt}
+\linespread{1.0}
+
+% Section headings: small caps, accent rule underneath
+\titleformat{\section}
+  {\normalfont\normalsize\bfseries\scshape\color{accent}}
+  {}{0pt}{}[\vspace{-7pt}\textcolor{accent!35}{\rule{\linewidth}{0.6pt}}]
+\titlespacing{\section}{0pt}{9pt}{4pt}
+
+% One entry: title, org, dates
+\newcommand{\entry}[3]{%
+  \textbf{#1}\hfill{\small\textcolor{muted}{#3}}\\[1pt]
+  {\small\textcolor{accent}{#2}}\\[2pt]
+}
+
+\newcommand{\proj}[2]{%
+  \textbf{#1}\ \ {\small\textcolor{muted}{#2}}\\[1pt]
+}
+
+\begin{document}
+
+% ------------------------------------------------------------------ header
+{\LARGE\bfseries Zander Carpio}\\[5pt]
+{\small\textcolor{muted}{
+  Baguio City, Cordillera Administrative Region, Philippines \ \textbar\
+  \href{mailto:zandercarpio.ph@gmail.com}{zandercarpio.ph@gmail.com}\\
+  \href{https://www.linkedin.com/in/zander-carpio/}{linkedin.com/in/zander-carpio}
+  \ \textbar\
+  \href{https://github.com/zandercarpioph-create}{github.com/zandercarpioph-create}
+}}
+
+\vspace{9pt}
+{\small
+Mathematics undergraduate working on quantitative modelling: epidemic dynamics,
+geospatial disease surveillance, and computational number theory. Seeking
+actuarial and data science roles.
+}
+
+% --------------------------------------------------------------- education
+\section{Education}
+
+\entry{BS Mathematics}{University of the Philippines Baguio}{Aug 2023 to 2027 (expected)}
+{\small
+\textbf{DOST-SEI Undergraduate Scholar}, a competitive national merit scholarship
+from the Philippine Department of Science and Technology. Undergraduate thesis in
+number theory.\\[2pt]
+\textit{Relevant coursework:} Real Analysis, Complex Analysis, Analytic Number
+Theory, Operations Research, Physics, Accounting.
+}
+
+\vspace{6pt}
+\entry{Secondary Education}{Aurora National Science High School}{2017 to 2023}
+
+% -------------------------------------------------------------- experience
+\section{Experience}
+
+\entry{Intern, Statistical Operations and Coordination Division}{Philippine Statistics Authority, Baguio City}{Jun to Jul 2026}
+{\small
+\begin{itemize}[leftmargin=12pt,itemsep=1pt,topsep=1pt]
+  \item Statistical operations, data visualisation and coordination work inside
+        the national statistics agency responsible for official statistics, the
+        census and civil registration.
+  \item Worked with survey and administrative data in its delivered state,
+        including inconsistent labelling and failed joins.
+\end{itemize}
+}
+
+\vspace{3pt}
+\entry{Peer Mentor, Learning Resource Center}{University of the Philippines Baguio, Contract}{Sep 2025 to present}
+{\small Mentoring undergraduates through mathematics coursework.}
+
+\vspace{3pt}
+\entry{Mathematics Tutor}{Freelance, Hybrid}{Jul 2021 to Jul 2024}
+{\small Three years tutoring mathematics at secondary and lower undergraduate level.}
+
+\vspace{3pt}
+\entry{Social Media Manager}{Freelance, Remote}{Jul 2022 to present}
+{\small Content production and campaign management for small businesses, run alongside full-time study.}
+
+% ---------------------------------------------------------------- projects
+\section{Quantitative Projects}
+
+{\small
+\proj{Dengue surveillance analysis, Baguio City}{R, QGIS}
+Reconstructed barangay-level surveillance across 127 barangays and 23 reporting
+weeks, joined on PSGC codes and mapped in QGIS, resolving an outbreak that peaked
+at 1,778 reported cases and fell below 70 within six weeks. Found two defects that
+silently corrupt naive analysis of the source files: counts mislabelled as rates,
+and delimiter collisions inside area names.
+
+\vspace{4pt}
+\proj{Compartmental epidemic models}{R, deSolve, Shiny, JavaScript}
+SIR and SEIR systems integrated with \texttt{deSolve} and published as interactive
+Shiny applications, then reimplemented independently in JavaScript with a
+fourth-order Runge-Kutta integrator. The two agree on peak infected, peak timing
+and attack rate.
+
+\vspace{4pt}
+\proj{Cholera transmission with an environmental reservoir}{R, MATLAB}
+SEIRB model coupling direct transmission to a bacterial reservoir, built as a
+797-line Shiny application with fourteen tunable parameters and cross-implemented
+in MATLAB.
+
+\vspace{4pt}
+\proj{Kaprekar triples, undergraduate thesis}{PARI/GP, LaTeX}
+Extending Iannucci and Foster (2005). Reduced an infinite search to a finite one by
+proving every triple is a root of a congruence, bounding the count at four per power
+of ten. Worked to a rule that no result counts until two independently written
+programs agree, which exposed a counting error in earlier code.
+}
+
+% ------------------------------------------------------------------ skills
+\section{Technical Skills}
+
+{\small
+\begin{tabular}{@{}>{\bfseries}p{2.15cm}p{15.3cm}@{}}
+Languages & R, Python, MATLAB, C, JavaScript, PARI/GP \\[2pt]
+Libraries & deSolve, Shiny, ggplot2, dplyr, tidyr, NumPy \\[2pt]
+Tools     & QGIS, LaTeX, Git, Excel \\
+\end{tabular}
+}
+
+\end{document}
