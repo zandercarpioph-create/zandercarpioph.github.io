@@ -77,19 +77,19 @@
     <div class="stats reveal">
       <div class="stat">
         <div class="num"><span data-count="127">0</span></div>
-        <div class="lbl">Barangays mapped across two disease datasets</div>
+        <div class="lbl">Barangays mapped and joined on PSGC code</div>
       </div>
       <div class="stat">
         <div class="num"><span data-count="23">0</span></div>
-        <div class="lbl">Surveillance weeks reconstructed and cross-checked</div>
+        <div class="lbl">Surveillance weeks recovered from a partial record</div>
       </div>
       <div class="stat">
-        <div class="num"><span data-count="1778">0</span></div>
-        <div class="lbl">Peak weekly cases in the outbreak analysed</div>
+        <div class="num"><span data-count="32">0</span><span>%</span></div>
+        <div class="lbl">Of dengue cases in the worst tenth of the city</div>
       </div>
       <div class="stat">
-        <div class="num"><span data-count="5">0</span></div>
-        <div class="lbl">Modelling projects in R, MATLAB and Python</div>
+        <div class="num"><span data-count="34">0</span></div>
+        <div class="lbl">Programs written to verify the thesis results</div>
       </div>
     </div>
   </div>
@@ -99,7 +99,7 @@
   <div class="wrap">
     <div class="sec-head reveal">
       <div class="mono-label">Selected work</div>
-      <h2>Models I built, and the checks that made me trust them</h2>
+      <h2>The work, and the checks that made me trust it</h2>
       <p>
         Coursework, thesis and group research in mathematical modelling and
         applied statistics. Every figure is generated from the underlying model
@@ -114,11 +114,18 @@
         <h3>Dengue surveillance, Baguio City</h3>
         <div class="meta">R &middot; QGIS &middot; Spatiotemporal analysis</div>
         <p>
-          Barangay-level dengue surveillance across <strong>127 barangays</strong>
-          and <strong>23 reporting weeks</strong>, joined on PSGC codes and
-          originally mapped in QGIS. The series resolves a sharp outbreak peaking in the week of
-          9 to 15 January, decaying from 1,778 reported cases to fewer than 70
-          within six weeks, then holding at a low baseline for the rest of the year.
+          Barangay-level dengue surveillance across <strong>127 barangays</strong>,
+          joined on PSGC codes and originally mapped in QGIS. The record supplied
+          was partial: <strong>23 of 52 weeks</strong>, broken by an eighteen-week
+          hole from mid-February and a further seven weeks in autumn. The charts
+          break where the data does, because drawing a line through four missing
+          months would invent a trend nobody measured.
+        </p>
+        <p>
+          Within what is covered, a sharp outbreak peaks in the week of 9 to 15
+          January at <strong>1,778 reported cases</strong> and falls below 70
+          within six weeks. A smaller rise follows through July and August once
+          reporting resumes. What happened in between is simply not in the data.
         </p>
         <p>
           The substantive finding is that the burden is
@@ -174,8 +181,9 @@
           <figcaption>
             Regenerated in R from the survey boundaries. They arrive as CAD
             linestrings, so they are polygonised and dissolved by PSGC code
-            before joining. Shaded by case count rather than rate, for the
-            denominator reason above, and deliberately unlabelled.
+            before joining, which recovers usable geometry for 121 of the 127
+            barangays. Shaded by case count rather than rate, for the denominator
+            reason above, and deliberately unlabelled.
           </figcaption>
         </figure>
         <div class="lab" style="margin-top:16px">

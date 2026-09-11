@@ -254,7 +254,13 @@
     }
 
     var max = Math.max.apply(null, values) * 1.08;
-    var x = function (i) { return m.l + (iw / (labels.length - 1 || 1)) * i; };
+    // Space points by their real date where offsets are supplied, so a
+    // four-month hole in the record reads as a hole and not as a straight line.
+    var days = (DEN.view === 'weeks' && d.days && d.days.length === values.length) ? d.days : null;
+    var span = days ? (days[days.length - 1] - days[0]) || 1 : 1;
+    var x = days
+      ? function (i) { return m.l + ((days[i] - days[0]) / span) * iw; }
+      : function (i) { return m.l + (iw / (labels.length - 1 || 1)) * i; };
     var xb = function (i) { return m.l + (iw / labels.length) * (i + .5); };
     var y = function (v) { return m.t + ih - (v / max) * ih; };
 
@@ -270,12 +276,26 @@
 
     if (DEN.view === 'weeks') {
       var pts = values.map(function (v, i) { return [x(i), y(v)]; });
-      var areaD = 'M' + x(0) + ' ' + y(0) + ' ' +
-        pts.map(function (q) { return 'L' + q[0].toFixed(2) + ' ' + q[1].toFixed(2); }).join(' ') +
-        ' L' + x(values.length - 1) + ' ' + y(0) + ' Z';
-      svg.appendChild(el('path', { d: areaD, fill: css('--accent'), opacity: .12 }));
-      svg.appendChild(el('path', { d: pathFrom(pts), fill: 'none', stroke: css('--accent'),
-        'stroke-width': 2.2, 'stroke-linejoin': 'round' }));
+
+      // break the series wherever more than one week separates two readings
+      var runs = [[0]];
+      for (var k = 1; k < values.length; k++) {
+        if (days && days[k] - days[k - 1] > 7) runs.push([k]);
+        else runs[runs.length - 1].push(k);
+      }
+      runs.forEach(function (run) {
+        var rp = run.map(function (i) { return pts[i]; });
+        var first = rp[0], last = rp[rp.length - 1];
+        var areaD = 'M' + first[0].toFixed(2) + ' ' + y(0) + ' ' +
+          rp.map(function (q) { return 'L' + q[0].toFixed(2) + ' ' + q[1].toFixed(2); }).join(' ') +
+          ' L' + last[0].toFixed(2) + ' ' + y(0) + ' Z';
+        svg.appendChild(el('path', { d: areaD, fill: css('--accent'), opacity: .12 }));
+        if (rp.length > 1) {
+          svg.appendChild(el('path', { d: pathFrom(rp), fill: 'none', stroke: css('--accent'),
+            'stroke-width': 2.2, 'stroke-linejoin': 'round' }));
+        }
+      });
+
       pts.forEach(function (q, i) {
         svg.appendChild(el('circle', { cx: q[0], cy: q[1], r: 3, fill: css('--accent') }));
         var hit = el('rect', { x: q[0] - 9, y: m.t, width: 18, height: ih,

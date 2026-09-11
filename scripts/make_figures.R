@@ -176,6 +176,12 @@ save_fig(p5, "fig-kaprekar.png", 7, 4.2)
 wk <- list.files(DATA, pattern = "^INC PER 1000 - [A-Z]", full.names = TRUE)
 mon <- c(Jan=1,Feb=2,Mar=3,Apr=4,May=5,Jun=6,Jul=7,Aug=8,Sep=9,Oct=10,Nov=11,Dec=12)
 
+# The record is not continuous: only 23 of 52 weeks are present. Plotting the
+# labels as evenly spaced categories would draw a straight line across a
+# four-month hole, so the series is placed on a real date axis and the gaps are
+# left as gaps. REFYEAR only fixes weekday spacing; the true year is unconfirmed
+# and is never printed.
+REFYEAR <- 2023
 rows <- lapply(wk, function(f) {
   lab <- sub("[.]csv$", "", sub("^.*INC PER 1000 - ", "", f))
   tok <- strsplit(lab, "[ -]+")[[1]]
@@ -183,21 +189,29 @@ rows <- lapply(wk, function(f) {
   if (is.na(m) || is.na(d)) return(NULL)
   v <- read.csv(f, stringsAsFactors = FALSE)
   i <- suppressWarnings(as.numeric(v$INC))
-  data.frame(label = lab, order = m * 100 + d,
+  data.frame(label = lab,
+             date = as.Date(sprintf("%d-%02d-%02d", REFYEAR, m, d)),
              total = sum(i, na.rm = TRUE),
              affected = sum(i > 0, na.rm = TRUE))
-}) |> bind_rows() |> arrange(order)
-rows$label <- factor(rows$label, levels = rows$label)
+}) |> bind_rows() |> arrange(date)
 
-p6 <- ggplot(rows, aes(label, total, group = 1)) +
-  geom_area(fill = accent, alpha = .13) +
-  geom_line(colour = accent, linewidth = 1.1) +
+# split into runs of consecutive weeks so no line is drawn across a gap
+rows$run <- cumsum(c(0, as.numeric(diff(rows$date)) > 7))
+gaps <- which(as.numeric(diff(rows$date)) > 7)
+cat(sprintf("  coverage: %d of 52 weeks (%.0f%%), %d gap(s), longest %.0f weeks\n",
+            nrow(rows), nrow(rows) / 52 * 100, length(gaps),
+            max(c(0, (as.numeric(diff(rows$date))[gaps] - 7) / 7))))
+
+p6 <- ggplot(rows, aes(date, total)) +
+  geom_area(aes(group = run), fill = accent, alpha = .13) +
+  geom_line(aes(group = run), colour = accent, linewidth = 1.1) +
   geom_point(colour = accent, size = 1.8) +
+  scale_x_date(date_breaks = "1 month", date_labels = "%b") +
   labs(title = "Baguio City dengue cases by surveillance week",
-       subtitle = sprintf("Reported cases across %d barangays over %d surveillance weeks",
+       subtitle = sprintf("%d barangays. Only %d of 52 weeks were supplied; the line breaks where the data does.",
                           nrow(read.csv(wk[1])), nrow(rows)),
        x = NULL, y = "Reported cases") +
-  base + theme(axis.text.x = element_text(angle = 45, hjust = 1, size = 7.5))
+  base
 save_fig(p6, "fig-dengue-weekly.png", 8, 4.4)
 
 brgy <- lapply(wk, function(f) {
@@ -326,6 +340,7 @@ top <- head(brgy, 12) |> mutate(label = sprintf("Barangay %02d", row_number()))
 json <- paste0(
   '{\n  "weeks": [', paste(jstr(as.character(rows$label)), collapse = ", "), '],\n',
   '  "cases": [', paste(jnum(rows$total), collapse = ", "), '],\n',
+  '  "days": [', paste(as.numeric(rows$date - min(rows$date)), collapse = ", "), '],\n',
   '  "barangays": [', paste(jstr(top$label), collapse = ", "), '],\n',
   '  "means": [', paste(jnum(top$mean_inc), collapse = ", "), '],\n',
   '  "n_barangays": ', nrow(read.csv(wk[1])), ',\n',
