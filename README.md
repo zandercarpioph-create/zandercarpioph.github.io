@@ -1,6 +1,6 @@
 # Portfolio
 
-Personal portfolio for actuarial and data science applications.
+Personal portfolio for analytical, data and research applications.
 Static HTML, CSS and JavaScript. No build step, no framework, no dependencies.
 
 ## Local preview
