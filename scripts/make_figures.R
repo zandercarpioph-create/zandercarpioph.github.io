@@ -161,14 +161,77 @@ kdf <- data.frame(n = 1:5, count = vapply(kap, \(x) x$count, numeric(1)))
 for (i in 1:5) cat(sprintf("  K(10^%d) = %d  %s\n", i, kap[[i]]$count,
                            paste(head(kap[[i]]$members, 6), collapse = ", ")))
 
-p5 <- ggplot(kdf, aes(factor(n), count)) +
-  geom_col(fill = accent, alpha = .85, width = .6) +
-  geom_text(aes(label = count), vjust = -0.55, size = 3.6, colour = ink) +
-  ylim(0, max(kdf$count) * 1.2) +
-  labs(title = "Kaprekar triples below each power of ten",
-       subtitle = "Counted by direct enumeration; exact while cubes stay under 2^53",
-       x = "n, where N = 10^n", y = "Number of triples") + base
-save_fig(p5, "fig-kaprekar.png", 7, 4.2)
+# ---- the structure worth showing: everything depends on n mod 81 ---------
+# Class counts come from kt_period_table() in the thesis PARI/GP program. That
+# program is re-run here when the interpreter is present, and the committed CSV
+# is used otherwise, so the figure never silently drifts from the source.
+GPDIR <- "C:/Users/Zander/Downloads/Files/01_School/Thesis-Kaprekar/05_computations/pari-gp"
+GPEXE <- file.path(GPDIR, "gp64-2-17-4.exe")
+CLSCSV <- file.path(DAT, "kaprekar-classes.csv")
+
+if (file.exists(GPEXE)) {
+  ok <- tryCatch({
+    owd <- setwd(GPDIR)
+    raw <- system2(GPEXE, c("-q", "-f", "kaprekar_triples.gp"),
+                   stdout = TRUE, stderr = TRUE, input = "quit;")
+    setwd(owd)
+    rowsx <- grep("^ +[0-9]+ : [0-9]+", raw, value = TRUE)
+    # Empty classes print a trailing "<-- K(10^n) EMPTY" annotation, so the two
+    # integers are captured explicitly rather than split off the line. Splitting
+    # on the colon swallows the annotation into the count and silently yields NA.
+    m <- regmatches(rowsx, regexec("^ +([0-9]+) +: +([0-9]+)", rowsx))
+    got <- vapply(m, length, integer(1)) == 3
+    parsed <- if (all(got)) {
+      data.frame(class = as.integer(vapply(m, `[`, character(1), 2)),
+                 count = as.integer(vapply(m, `[`, character(1), 3)))
+    } else NULL
+    if (length(rowsx) == 54 && !is.null(parsed) && !anyNA(parsed)) {
+      write.csv(parsed, CLSCSV, row.names = FALSE)
+      cat(sprintf("  kaprekar classes: re-derived from PARI/GP (%d classes, %d empty)\n",
+                  nrow(parsed), sum(parsed$count == 0)))
+      TRUE
+    } else FALSE
+  }, error = function(e) FALSE)
+  if (!ok) cat("  kaprekar classes: PARI/GP run did not return 54 rows, using committed CSV\n")
+}
+
+cls <- read.csv(CLSCSV, stringsAsFactors = FALSE)
+grid <- data.frame(class = 1:81) |>
+  left_join(cls, by = "class") |>
+  mutate(col = (class - 1) %% 9 + 1,
+         row = (class - 1) %/% 9 + 1,
+         excluded = class %% 3 == 0,
+         label = ifelse(excluded, "", as.character(count)))
+
+n_empty <- sum(grid$count == 0, na.rm = TRUE)
+peaks   <- grid$class[which(grid$count == max(grid$count, na.rm = TRUE))]
+cat(sprintf("  kaprekar classes: %d covered, %d empty, max %d at n = %s (mod 81)\n",
+            sum(!grid$excluded), n_empty, max(grid$count, na.rm = TRUE),
+            paste(peaks, collapse = " and ")))
+
+p5 <- ggplot(grid, aes(col, -row)) +
+  geom_tile(aes(fill = count), colour = "white", linewidth = 1.4) +
+  # width and height must be stated: with only two highlighted cells ggplot
+  # infers the tile size from the data resolution and draws them eight rows tall.
+  geom_tile(data = subset(grid, class %in% peaks),
+            fill = NA, colour = ink, linewidth = 1.1, width = 1, height = 1) +
+  geom_text(aes(label = label, colour = count > 2), size = 3.5, fontface = "bold") +
+  geom_text(data = subset(grid, excluded), aes(label = "3|n"),
+            size = 2.5, colour = "#9aa7b5") +
+  scale_fill_gradient(low = "#fdf1ea", high = "#7c2d12", na.value = "#f1efec",
+                      breaks = 0:4, name = "Triples") +
+  scale_colour_manual(values = c(`FALSE` = ink, `TRUE` = "white"), guide = "none") +
+  coord_equal() +
+  labs(title = "Every power of ten is decided by n mod 81",
+       subtitle = sprintf("One cell per residue class. %d classes carry the theorem, %d of them admit no triple at all,\nand the count never exceeds %d, reached only at n = %s. Grey cells fall outside it.",
+                          sum(!grid$excluded), n_empty, max(grid$count, na.rm = TRUE),
+                          paste(peaks, collapse = " and ")),
+       x = NULL, y = NULL) +
+  theme_void(base_size = 11) +
+  theme(plot.title = element_text(face = "bold", size = 13, colour = ink),
+        plot.subtitle = element_text(size = 9.2, colour = "#5b6b7f", lineheight = 1.25),
+        legend.position = "right")
+save_fig(p5, "fig-kaprekar.png", 7.6, 5.2)
 
 # =========================================================================
 # 6. Dengue surveillance, Baguio City

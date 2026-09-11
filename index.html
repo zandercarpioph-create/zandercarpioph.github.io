@@ -324,15 +324,26 @@
           8 is the smallest, because 8<sup>3</sup> = 512 splits as 5, 1 and 2.
         </p>
         <p>
-          The central result turns an infinite search into a finite one by proving
-          every triple is a root of a congruence. That bounds the count at four for
-          each power of ten and rules out eleven residue classes entirely.
+          The central result turns an infinite search into a finite one. Every
+          triple has to be a root of a congruence, which replaces a sweep over
+          all of 10<sup>n</sup> with a handful of candidates decided by one cube
+          and two divisions.
+        </p>
+        <p>
+          What falls out is periodic. Because 10 has order 81 modulo 3<sup>6</sup>,
+          the answer for a power of ten depends only on
+          <strong>n mod 81</strong>. Of the 54 classes the theorem covers, the
+          count <strong>never exceeds four</strong>, reaches four in only two of
+          them, and <strong>eleven classes admit no triple at all</strong>. The
+          grid is the whole theorem in one picture.
         </p>
         <p>
           I work to a rule on this project: nothing counts until two separately
           written programs agree on it. That caught a counting error in my own
-          code which had understated a maximum by a third, and it is why the
-          counts below were checked a second way before being shown.
+          code which had understated a maximum by a third. The program carries a
+          self-test that runs before anything is trusted, and the class counts
+          are cross-checked against brute-force enumeration for the small
+          exponents where a cube still fits in a double.
         </p>
         <div class="tags">
           <span class="tag">PARI/GP</span><span class="tag">R</span>
@@ -341,10 +352,12 @@
       </div>
       <div class="project-media">
         <figure class="panel">
-          <img src="assets/img/fig-kaprekar.png" alt="Bar chart of the number of Kaprekar triples below each power of ten, from n equals one to five.">
+          <img src="assets/img/fig-kaprekar.png" alt="A nine by nine grid of the residue classes modulo 81, each cell shaded by how many Kaprekar triples that class admits, with the two classes reaching four outlined and the classes divisible by three greyed out.">
           <figcaption>
-            Counted by direct enumeration in R, exact while cubes stay below
-            2<sup>53</sup>. The single triple below 10 is 8; below 10,000 there are nine.
+            Produced by <code>kt_period_table()</code> in the thesis PARI/GP
+            program, re-run by the figure script so the grid cannot drift from
+            the source. The interval of classes divisible by three lies outside
+            the theorem and is left grey.
           </figcaption>
         </figure>
       </div>
