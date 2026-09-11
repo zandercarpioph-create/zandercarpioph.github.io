@@ -212,9 +212,11 @@ brgy <- lapply(wk, function(f) {
 # named as hotspots, so ranked labels carry the finding without the exposure.
 brgy_pub <- brgy |> head(15) |>
   mutate(label = sprintf("Barangay %02d", row_number()))
+# Order by rank, not by value: ties would otherwise sort out of sequence.
+brgy_pub$label <- factor(brgy_pub$label, levels = rev(brgy_pub$label))
 
 p7 <- brgy_pub |>
-  ggplot(aes(reorder(label, mean_inc), mean_inc)) +
+  ggplot(aes(label, mean_inc)) +
   geom_col(fill = accent, alpha = .85, width = .72) + coord_flip() +
   labs(title = "Dengue burden gradient across barangays",
        subtitle = "Mean reported cases per surveillance week, fifteen highest, names withheld",
