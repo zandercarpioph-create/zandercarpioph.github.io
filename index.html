@@ -115,8 +115,8 @@
         <div class="meta">R &middot; QGIS &middot; Spatiotemporal analysis</div>
         <p>
           Barangay-level dengue surveillance across <strong>127 barangays</strong>
-          and <strong>23 reporting weeks</strong>, joined on PSGC codes and mapped
-          in QGIS. The series resolves a sharp outbreak peaking in the week of
+          and <strong>23 reporting weeks</strong>, joined on PSGC codes and
+          originally mapped in QGIS. The series resolves a sharp outbreak peaking in the week of
           9 to 15 January, decaying from 1,778 reported cases to fewer than 70
           within six weeks, then holding at a low baseline for the rest of the year.
         </p>
@@ -154,8 +154,9 @@
         <figure class="panel">
           <img src="assets/img/fig-dengue-map.png" alt="Choropleth of Baguio City showing mean weekly dengue cases across 121 barangay polygons, with a small number of dark high-burden areas against a mostly pale city.">
           <figcaption>
-            Boundaries arrive as CAD linestrings, so they are polygonised and
-            dissolved by PSGC code before joining. Deliberately unlabelled.
+            Regenerated in R from the survey boundaries. They arrive as CAD
+            linestrings, so they are polygonised and dissolved by PSGC code
+            before joining. Deliberately unlabelled.
           </figcaption>
         </figure>
         <div class="lab" style="margin-top:16px">
