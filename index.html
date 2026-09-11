@@ -50,16 +50,15 @@
       BS Mathematics at the <strong>University of the Philippines Baguio</strong>,
       graduating 2027, on a national <strong>DOST-SEI merit scholarship</strong>
       and most recently a statistics intern at the
-      <strong>Philippine Statistics Authority</strong>. I build and verify
-      quantitative models: epidemic dynamics, geospatial disease surveillance,
-      and computational number theory. I care more about whether a result is
-      <strong>checkable</strong> than whether it arrived quickly.
+      <strong>Philippine Statistics Authority</strong>. I work on quantitative
+      and analytical problems: epidemic dynamics, geospatial disease
+      surveillance, official statistics, and computational number theory.
     </p>
 
     <div class="badges">
       <span class="badge">DOST-SEI Undergraduate Scholar</span>
       <span class="badge">Philippine Statistics Authority intern</span>
-      <span class="badge alt">Open to actuarial and data science roles</span>
+      <span class="badge alt">Open to analytical, data and research roles</span>
     </div>
 
     <div class="actions">
@@ -77,20 +76,20 @@
 
     <div class="stats reveal">
       <div class="stat">
-        <div class="num"><span data-count="2353">0</span></div>
-        <div class="lbl">Lines of modelling code in R, MATLAB and C</div>
-      </div>
-      <div class="stat">
         <div class="num"><span data-count="127">0</span></div>
-        <div class="lbl">Barangays in the dengue surveillance analysis</div>
+        <div class="lbl">Barangays mapped across two disease datasets</div>
       </div>
       <div class="stat">
         <div class="num"><span data-count="23">0</span></div>
-        <div class="lbl">Surveillance weeks reconstructed and checked</div>
+        <div class="lbl">Surveillance weeks reconstructed and cross-checked</div>
       </div>
       <div class="stat">
-        <div class="num"><span data-count="797">0</span></div>
-        <div class="lbl">Lines in the cholera Shiny application</div>
+        <div class="num"><span data-count="1778">0</span></div>
+        <div class="lbl">Peak weekly cases in the outbreak analysed</div>
+      </div>
+      <div class="stat">
+        <div class="num"><span data-count="5">0</span></div>
+        <div class="lbl">Modelling projects in R, MATLAB and Python</div>
       </div>
     </div>
   </div>
@@ -102,10 +101,10 @@
       <div class="mono-label">Selected work</div>
       <h2>Models I built, and the checks that made me trust them</h2>
       <p>
-        Every figure below is produced from the underlying model or dataset by
-        <code>scripts/make_figures.R</code> in this repository. The first two
-        projects run live in your browser, so you can move the parameters
-        yourself rather than take my word for the shape of the curve.
+        Coursework, thesis and group research in mathematical modelling and
+        applied statistics. Every figure is generated from the underlying model
+        or dataset rather than drawn by hand, and the first two projects include
+        interactive panels so the data and the dynamics can be explored directly.
       </p>
     </div>
 
@@ -122,12 +121,21 @@
           within six weeks, then holding at a low baseline for the rest of the year.
         </p>
         <p>
-          Cleaning mattered more than modelling. Two things in this dataset will
-          quietly produce wrong answers: the files are labelled as incidence per
-          1,000 but hold <strong>integer case counts</strong>, and several barangay
-          names contain commas, so any naive comma split silently undercounts. My
-          first cross-check reported 1,534 cases for a week whose true total was
-          1,778. I only caught it because the two routes disagreed.
+          The substantive finding is that the burden is
+          <strong>concentrated rather than citywide</strong>. The worst tenth of
+          barangays carry <strong>32 per cent</strong> of all reported cases, the
+          worst quarter carry 53 per cent, and half of every case in the period
+          falls inside just 23 per cent of the city, a Gini of 0.39. An outbreak
+          shaped like that is answered by targeting a short list of areas, not by
+          spending evenly across 127 of them.
+        </p>
+        <p>
+          Getting there took more cleaning than modelling. Two traps in this
+          dataset quietly produce wrong answers: the files are labelled as
+          incidence per 1,000 but hold <strong>integer case counts</strong>, and
+          several barangay names contain commas, so a naive split undercounts.
+          One early cross-check reported 1,534 cases for a week whose true total
+          was 1,778, and it only surfaced because two routes disagreed.
         </p>
         <p class="note">
           Surveillance data obtained from a health office and not redistributed.
@@ -143,13 +151,16 @@
       </div>
 
       <div class="project-media">
-        <div class="lab">
+        <figure class="panel">
+          <img src="assets/img/fig-dengue-map.png" alt="Choropleth of Baguio City showing mean weekly dengue cases across 121 barangay polygons, with a small number of dark high-burden areas against a mostly pale city.">
+          <figcaption>
+            Boundaries arrive as CAD linestrings, so they are polygonised and
+            dissolved by PSGC code before joining. Deliberately unlabelled.
+          </figcaption>
+        </figure>
+        <div class="lab" style="margin-top:16px">
           <div class="lab-bar">
-            <span class="lab-title">Explore the data</span>
-            <div class="seg" id="dengue-seg">
-              <button type="button" data-view="weeks" aria-pressed="true">By week</button>
-              <button type="button" data-view="brgy" aria-pressed="false">By barangay</button>
-            </div>
+            <span class="lab-title">Weekly series</span>
           </div>
           <div class="lab-plot plot-host">
             <div id="dengue-plot"></div>
@@ -159,6 +170,12 @@
             <div>Hover any point for the exact figure.</div>
           </div>
         </div>
+        <figure class="panel">
+          <img src="assets/img/fig-dengue-concentration.png" alt="Cumulative share of dengue cases against barangays ranked by burden, bowing well above the even-spread diagonal.">
+          <figcaption>
+            How far the curve bows above the diagonal is how unequal the burden is.
+          </figcaption>
+        </figure>
       </div>
     </article>
 
@@ -173,11 +190,10 @@
           moved and the epidemic curve re-solved live.
         </p>
         <p>
-          The version on this page is the same mathematics reimplemented from
-          scratch in JavaScript with a <strong>fourth-order Runge-Kutta</strong>
-          integrator. Building it twice, in two languages, is the point: when both
-          produce the same curve, the dynamics belong to the model rather than to
-          the solver.
+          The panel alongside is a browser demonstration of those same two
+          systems, so the behaviour can be explored without installing R. It
+          solves the equations live and agrees with the R output at the default
+          parameters.
         </p>
         <p>
           Switch to SEIR and watch what a latent compartment does. The same
@@ -186,8 +202,7 @@
         </p>
         <div class="tags">
           <span class="tag">R</span><span class="tag">deSolve</span>
-          <span class="tag">Shiny</span><span class="tag">JavaScript</span>
-          <span class="tag">RK4</span>
+          <span class="tag">Shiny</span><span class="tag">ODEs</span>
         </div>
       </div>
 
@@ -276,11 +291,10 @@
           each power of ten and rules out eleven residue classes entirely.
         </p>
         <p>
-          The project runs on a rule I set myself:
-          <strong>no result counts until two independently written programs agree</strong>.
-          It has earned its keep twice. It caught a counting error in my own code
-          that had understated a maximum by a third, and the chart here, written
-          fresh in R, reproduces the counts my PARI/GP work had already established.
+          I work to a rule on this project: nothing counts until two separately
+          written programs agree on it. That caught a counting error in my own
+          code which had understated a maximum by a third, and it is why the
+          counts below were checked a second way before being shown.
         </p>
         <div class="tags">
           <span class="tag">PARI/GP</span><span class="tag">R</span>
@@ -310,8 +324,8 @@
           into a collective rhythm, and the transition is sharp.
         </p>
         <p>
-          Originally studied in a Python notebook; the sweep shown here was
-          recomputed in R so that the whole site regenerates from one script.
+          Studied in a Python notebook, sweeping the coupling strength to locate
+          the onset of synchronisation.
         </p>
         <div class="tags">
           <span class="tag">Python</span><span class="tag">NumPy</span>
@@ -378,8 +392,12 @@
           <h3>Social Media Manager</h3>
           <div class="org">Freelance, Remote</div>
           <p>
-            Content production and campaign management for small businesses
-            across several industries, run alongside full-time study.
+            Four years running social media for small businesses across several
+            industries, sustained alongside a full-time mathematics degree and a
+            scholarship. Campaign management, scheduling and reporting in
+            <strong>GoHighLevel</strong> and <strong>SocialPilot</strong>, with
+            the graphic design and content production handled in house. Client
+            names withheld.
           </p>
         </div>
       </div>
@@ -430,8 +448,8 @@
           <li><strong>Python</strong>, with NumPy and Jupyter</li>
           <li><strong>MATLAB</strong>, for numerical modelling</li>
           <li><strong>QGIS</strong>, for geospatial joins and thematic maps</li>
-          <li><strong>JavaScript</strong>, SVG and numerical methods in the browser</li>
           <li><strong>C</strong>, <strong>PARI/GP</strong>, <strong>LaTeX</strong>, <strong>Excel</strong></li>
+          <li><strong>GoHighLevel</strong>, <strong>SocialPilot</strong> and graphic design tooling</li>
         </ul>
       </div>
       <div class="card">
@@ -448,7 +466,7 @@
       <div class="card">
         <h3>How I work</h3>
         <ul>
-          <li>Cross-check every result against a second, independently written implementation</li>
+          <li>Rebuild a result a second way before trusting it</li>
           <li>Treat a reported number as a claim until it has been reproduced</li>
           <li>Keep raw data out of version control and regenerate every figure from script</li>
           <li>Label what is proved separately from what is only computed</li>
@@ -523,7 +541,10 @@
 <footer>
   <div class="wrap row">
     <p>Zander Carpio, Baguio City, Philippines</p>
-    <p>Static site, no framework. Every figure regenerated from source by <code>scripts/make_figures.R</code>.</p>
+    <p>
+      Static site, no framework. Analysis and figures in R from my own project
+      data; the site itself was built with AI assistance.
+    </p>
   </div>
 </footer>
 

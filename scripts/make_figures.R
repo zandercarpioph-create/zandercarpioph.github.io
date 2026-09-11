@@ -207,22 +207,84 @@ brgy <- lapply(wk, function(f) {
   summarise(mean_inc = mean(INC, na.rm = TRUE), .groups = "drop") |>
   arrange(desc(mean_inc))
 
-# Barangay names are deliberately withheld from everything that ships. The
-# analytical point is the steepness of the gradient, not which communities are
-# named as hotspots, so ranked labels carry the finding without the exposure.
-brgy_pub <- brgy |> head(15) |>
-  mutate(label = sprintf("Barangay %02d", row_number()))
-# Order by rank, not by value: ties would otherwise sort out of sequence.
-brgy_pub$label <- factor(brgy_pub$label, levels = rev(brgy_pub$label))
+# ---- how concentrated is the burden? -------------------------------------
+# A ranked bar chart of anonymised barangays says almost nothing. The question
+# worth answering is whether dengue is spread evenly across the city or carried
+# by a small number of areas, which is what decides where control effort goes.
+per_brgy <- lapply(wk, function(f) {
+  v <- read.csv(f, stringsAsFactors = FALSE)
+  data.frame(code = v$BRGY.CODE, inc = suppressWarnings(as.numeric(v$INC)))
+}) |> bind_rows() |> group_by(code) |>
+  summarise(total = sum(inc, na.rm = TRUE), .groups = "drop") |>
+  arrange(desc(total))
 
-p7 <- brgy_pub |>
-  ggplot(aes(label, mean_inc)) +
-  geom_col(fill = accent, alpha = .85, width = .72) + coord_flip() +
-  labs(title = "Dengue burden gradient across barangays",
-       subtitle = "Mean reported cases per surveillance week, fifteen highest, names withheld",
-       x = NULL, y = "Mean reported cases per week") +
-  base + theme(axis.text.y = element_text(size = 8))
-save_fig(p7, "fig-dengue-brgy.png", 8.6, 5)
+lor <- per_brgy |>
+  mutate(share_brgy = row_number() / n(),
+         share_case = cumsum(total) / sum(total))
+top10 <- lor$share_case[which.min(abs(lor$share_brgy - 0.10))]
+top25 <- lor$share_case[which.min(abs(lor$share_brgy - 0.25))]
+half  <- lor$share_brgy[which.min(abs(lor$share_case - 0.50))]
+# Gini over the barangay case distribution
+g <- with(lor, {
+  x <- sort(per_brgy$total); n <- length(x)
+  sum((2 * seq_len(n) - n - 1) * x) / (n * sum(x))
+})
+cat(sprintf("  concentration: top 10%% of barangays = %.0f%% of cases; top 25%% = %.0f%%; half of cases in %.0f%% of barangays; Gini = %.2f\n",
+            top10 * 100, top25 * 100, half * 100, g))
+
+p7 <- ggplot(lor, aes(share_brgy, share_case)) +
+  geom_abline(slope = 1, intercept = 0, linetype = "dashed", colour = "#94a3b8") +
+  geom_area(fill = accent, alpha = .12) +
+  geom_line(colour = accent, linewidth = 1.2) +
+  annotate("segment", x = .10, xend = .10, y = 0, yend = top10,
+           colour = "#64748b", linetype = "dotted") +
+  annotate("text", x = .12, y = top10 - .06,
+           label = sprintf("top 10%% of barangays\ncarry %.0f%% of cases", top10 * 100),
+           hjust = 0, size = 3.1, colour = "#475569") +
+  scale_x_continuous(labels = function(v) paste0(v * 100, "%")) +
+  scale_y_continuous(labels = function(v) paste0(v * 100, "%")) +
+  labs(title = "Dengue burden is concentrated, not evenly spread",
+       subtitle = sprintf("Dashed line is an even spread across the city. Gini %.2f.", g),
+       x = "Share of barangays, ranked worst first", y = "Share of all reported cases") +
+  base
+save_fig(p7, "fig-dengue-concentration.png", 7.6, 4.6)
+
+# ---- choropleth, deliberately unlabelled ---------------------------------
+# Boundaries arrive as CAD linestrings, so they are polygonised and dissolved
+# by PSGC code before joining. No barangay is named on the published map.
+suppressPackageStartupMessages(library(sf))
+BND <- file.path("C:/Users/Zander/Downloads/Files/10_Uncategorized/QGIS",
+                 "BAGUIO BARANGAY BOUNDARY-20240101T132904Z-001",
+                 "BAGUIO BARANGAY BOUNDARY", "BRGY BOUNDARY.shp")
+
+if (file.exists(BND)) {
+  ln <- suppressWarnings(st_read(BND, quiet = TRUE))
+  ln <- ln[!is.na(ln$BRGY.code), c("BRGY.code")]
+  pg <- suppressWarnings(st_polygonize(st_geometry(ln)))
+  keep <- !st_is_empty(pg)
+  shp <- st_sf(code = ln$BRGY.code[keep],
+               geometry = st_collection_extract(pg[keep], "POLYGON"))
+  shp <- shp |> group_by(code) |> summarise(.groups = "drop")
+
+  wks <- nrow(rows)
+  mp <- left_join(shp, per_brgy, by = "code") |>
+    mutate(rate = total / wks)
+
+  p8 <- ggplot(mp) +
+    geom_sf(aes(fill = rate), colour = "white", linewidth = .18) +
+    scale_fill_gradient(low = "#fdf1ea", high = "#7c2d12", na.value = "#eceae6",
+                        name = "Mean cases\nper week") +
+    labs(title = "Dengue burden across Baguio City",
+         subtitle = sprintf("%d barangay polygons built from survey boundaries and joined on PSGC code. Names withheld.",
+                            nrow(mp))) +
+    theme_void(base_size = 11) +
+    theme(plot.title = element_text(face = "bold", size = 13, colour = ink),
+          plot.subtitle = element_text(size = 9.5, colour = "#5b6b7f"),
+          legend.position = "right")
+  save_fig(p8, "fig-dengue-map.png", 7.4, 5.6)
+} else {
+  cat("  boundary shapefile not found, skipping the map\n")
+}
 
 # ---- aggregates for the interactive chart on the site --------------------
 # Only these derived numbers leave the machine; the raw files stay put.
