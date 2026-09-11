@@ -105,11 +105,12 @@ design and content produced in house. Client names withheld.}
 \proj{Dengue surveillance analysis, Baguio City}{R, QGIS}
 Reconstructed barangay-level surveillance across 127 barangays and 23 reporting
 weeks, joined on PSGC codes and mapped as a choropleth. Showed the burden is
-concentrated rather than citywide: the worst tenth of barangays carry 32\% of
-reported cases and half of all cases fall inside 23\% of the city, a Gini of 0.39,
-which argues for targeted rather than uniform control. Also found two defects that
-silently corrupt naive analysis: counts mislabelled as rates, and delimiter
-collisions inside area names.
+concentrated rather than citywide, the worst tenth of barangays carrying 32\% of
+cases, and confirmed this was not an artefact of barangay size by re-deriving it
+from population-normalised incidence (32.4\% against 31.7\%). That check exposed a
+denominator failure in the commercial core, where residential population
+understates the at-risk daytime population enough to yield nominal rates above
+4,000 per 1,000.
 
 \vspace{4pt}
 \proj{Compartmental epidemic models}{R, deSolve, Shiny}

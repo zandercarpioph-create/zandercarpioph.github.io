@@ -218,36 +218,66 @@ per_brgy <- lapply(wk, function(f) {
   summarise(total = sum(inc, na.rm = TRUE), .groups = "drop") |>
   arrange(desc(total))
 
-lor <- per_brgy |>
-  mutate(share_brgy = row_number() / n(),
-         share_case = cumsum(total) / sum(total))
-top10 <- lor$share_case[which.min(abs(lor$share_brgy - 0.10))]
-top25 <- lor$share_case[which.min(abs(lor$share_brgy - 0.25))]
-half  <- lor$share_brgy[which.min(abs(lor$share_case - 0.50))]
-# Gini over the barangay case distribution
-g <- with(lor, {
-  x <- sort(per_brgy$total); n <- length(x)
-  sum((2 * seq_len(n) - n - 1) * x) / (n * sum(x))
-})
-cat(sprintf("  concentration: top 10%% of barangays = %.0f%% of cases; top 25%% = %.0f%%; half of cases in %.0f%% of barangays; Gini = %.2f\n",
-            top10 * 100, top25 * 100, half * 100, g))
+gini <- function(x) { x <- sort(x); n <- length(x); sum((2 * seq_len(n) - n - 1) * x) / (n * sum(x)) }
 
-p7 <- ggplot(lor, aes(share_brgy, share_case)) +
+# Route 1: rank by raw case count, x is share of barangays.
+cnt <- per_brgy |> arrange(desc(total)) |>
+  mutate(x = row_number() / n(), y = cumsum(total) / sum(total))
+g_cnt   <- gini(per_brgy$total)
+c10     <- cnt$y[which.min(abs(cnt$x - 0.10))]
+
+# Route 2: normalise by residential population and rank by incidence, x is
+# share of population. Residential denominators are wrong for the commercial
+# core, so those barangays are held out rather than silently distorting it.
+POPFILE <- file.path("C:/Users/Zander/Downloads/Files/10_Uncategorized/QGIS",
+                     "QGIS Files-20240102T115653Z-001", "QGIS Files", "CSV",
+                     "DENGUE_CASES_IN_BAGUIO_CITY - INCIDENCE_RATE.csv")
+have_pop <- file.exists(POPFILE)
+
+if (have_pop) {
+  pop <- read.csv(POPFILE, stringsAsFactors = FALSE) |>
+    transmute(code = CODE, popln = suppressWarnings(as.numeric(POPLN))) |>
+    filter(!is.na(popln), popln > 0, nzchar(code))
+  jn <- inner_join(per_brgy, pop, by = "code") |> mutate(rate = total / popln * 1000)
+  r_all <- cor(jn$total, jn$popln)
+  small <- jn |> filter(popln < 1000)
+  res <- jn |> filter(popln >= 1000) |> arrange(desc(rate)) |>
+    mutate(x = cumsum(popln) / sum(popln), y = cumsum(total) / sum(total))
+  g_rate <- gini(jn$rate[jn$popln >= 1000])
+  r10    <- res$y[which.min(abs(res$x - 0.10))]
+  cat(sprintf("  cases vs population correlation: %.2f (counts are not a population artefact)\n", r_all))
+  cat(sprintf("  by count : worst 10%% of barangays  = %.1f%% of cases, Gini %.2f\n", c10 * 100, g_cnt))
+  cat(sprintf("  by rate  : worst 10%% of population = %.1f%% of cases, Gini %.2f (%d barangays, popln >= 1000)\n",
+              r10 * 100, g_rate, nrow(res)))
+  cat(sprintf("  held out : %d barangays under 1,000 residents carrying %.0f%% of cases; max rate there %.0f per 1,000\n",
+              nrow(small), sum(small$total) / sum(jn$total) * 100, max(small$rate)))
+
+  lines <- bind_rows(
+    cnt |> transmute(x, y, basis = "By case count, share of barangays"),
+    res |> transmute(x, y, basis = "By incidence, share of population")
+  )
+} else {
+  cat("  population file not found, plotting the count route only\n")
+  lines <- cnt |> transmute(x, y, basis = "By case count, share of barangays")
+  r10 <- c10
+}
+
+p7 <- ggplot(lines, aes(x, y, colour = basis)) +
   geom_abline(slope = 1, intercept = 0, linetype = "dashed", colour = "#94a3b8") +
-  geom_area(fill = accent, alpha = .12) +
-  geom_line(colour = accent, linewidth = 1.2) +
-  annotate("segment", x = .10, xend = .10, y = 0, yend = top10,
+  geom_line(linewidth = 1.2) +
+  annotate("segment", x = .10, xend = .10, y = 0, yend = max(c10, r10),
            colour = "#64748b", linetype = "dotted") +
-  annotate("text", x = .12, y = top10 - .06,
-           label = sprintf("top 10%% of barangays\ncarry %.0f%% of cases", top10 * 100),
+  annotate("text", x = .125, y = max(c10, r10) - .10,
+           label = sprintf("worst tenth of the city:\n%.0f%% and %.0f%% of cases", c10 * 100, r10 * 100),
            hjust = 0, size = 3.1, colour = "#475569") +
+  scale_colour_manual(values = c(accent, "#0f766e")) +
   scale_x_continuous(labels = function(v) paste0(v * 100, "%")) +
   scale_y_continuous(labels = function(v) paste0(v * 100, "%")) +
-  labs(title = "Dengue burden is concentrated, not evenly spread",
-       subtitle = sprintf("Dashed line is an even spread across the city. Gini %.2f.", g),
-       x = "Share of barangays, ranked worst first", y = "Share of all reported cases") +
+  labs(title = "The same concentration, reached two different ways",
+       subtitle = "Dashed line is an even spread. Both routes put roughly a third of cases in the worst tenth of the city.",
+       x = "Share of the city, ranked worst first", y = "Share of all reported cases") +
   base
-save_fig(p7, "fig-dengue-concentration.png", 7.6, 4.6)
+save_fig(p7, "fig-dengue-concentration.png", 7.8, 4.8)
 
 # ---- choropleth, deliberately unlabelled ---------------------------------
 # Boundaries arrive as CAD linestrings, so they are polygonised and dissolved

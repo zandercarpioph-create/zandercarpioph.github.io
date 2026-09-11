@@ -123,11 +123,29 @@
         <p>
           The substantive finding is that the burden is
           <strong>concentrated rather than citywide</strong>. The worst tenth of
-          barangays carry <strong>32 per cent</strong> of all reported cases, the
-          worst quarter carry 53 per cent, and half of every case in the period
-          falls inside just 23 per cent of the city, a Gini of 0.39. An outbreak
-          shaped like that is answered by targeting a short list of areas, not by
-          spending evenly across 127 of them.
+          barangays carry <strong>32 per cent</strong> of all reported cases and
+          the worst quarter carry 53 per cent. An outbreak shaped like that is
+          answered by targeting a short list of areas, not by spending evenly
+          across 127 of them.
+        </p>
+        <p>
+          The obvious objection is that bigger barangays simply have more people
+          to infect, so the result would be arithmetic rather than epidemiology.
+          It is not: case count and residential population correlate at
+          <strong>0.08</strong>, essentially not at all. Normalising by
+          population and re-ranking by incidence puts <strong>32.4 per cent</strong>
+          of cases in the worst tenth, against 31.7 per cent by raw count. Two
+          different denominators, the same answer.
+        </p>
+        <p>
+          That check surfaced a second problem worth more than the first. Dengue
+          rates are unusable for the commercial core, because the denominator is
+          <em>residential</em> population while the people at risk are the daytime
+          crowd. One market barangay houses 31 residents and recorded 133 cases,
+          a nominal rate of 4,290 per 1,000, which would mean every resident
+          infected four times over. Twenty-one barangays under a thousand
+          residents are held out of the rate calculation rather than allowed to
+          quietly distort it.
         </p>
         <p>
           Getting there took more cleaning than modelling. Two traps in this
@@ -156,7 +174,8 @@
           <figcaption>
             Regenerated in R from the survey boundaries. They arrive as CAD
             linestrings, so they are polygonised and dissolved by PSGC code
-            before joining. Deliberately unlabelled.
+            before joining. Shaded by case count rather than rate, for the
+            denominator reason above, and deliberately unlabelled.
           </figcaption>
         </figure>
         <div class="lab" style="margin-top:16px">
@@ -174,7 +193,9 @@
         <figure class="panel">
           <img src="assets/img/fig-dengue-concentration.png" alt="Cumulative share of dengue cases against barangays ranked by burden, bowing well above the even-spread diagonal.">
           <figcaption>
-            How far the curve bows above the diagonal is how unequal the burden is.
+            How far a curve bows above the diagonal is how unequal the burden is.
+            The two routes are computed from different denominators and land in
+            the same place, which is the reason to believe either of them.
           </figcaption>
         </figure>
       </div>
