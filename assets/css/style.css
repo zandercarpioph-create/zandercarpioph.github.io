@@ -228,6 +228,13 @@ section.tinted { background: var(--bg-alt); border-block: 1px solid var(--line-s
 }
 .project-body strong { color: var(--ink); font-weight: 600; }
 
+.repo-link {
+  display: inline-flex; align-items: center; gap: 7px; margin-top: 16px;
+  font-size: .875rem; font-weight: 500; color: var(--accent);
+}
+.repo-link svg { width: 15px; height: 15px; }
+.repo-link:hover { text-decoration: underline; }
+
 .tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 18px; }
 .tag {
   font-family: var(--mono); font-size: .705rem; padding: 4px 9px; border-radius: 5px;
