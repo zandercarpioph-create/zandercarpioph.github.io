@@ -1,0 +1,8 @@
+{
+  "weeks": ["Jan 2-8", "Jan 9-15", "Jan 16-22", "Jan 23-29", "Jan 30-Feb 5", "Feb 6-12", "Feb 13-19", "June 26-July 2", "July 3-9", "July 10-16", "July 17-23", "July 24-30", "July 31-August 6", "August 7-13", "August 14-20", "August 21-27", "August 28-September 3", "October 23-29", "October 30-November 5", "November 6-12", "November 13-19", "November 20-26", "November 27-December 3"],
+  "cases": [712, 1778, 1187, 590, 252, 191, 68, 77, 68, 85, 117, 172, 165, 197, 141, 81, 75, 52, 67, 55, 55, 57, 38],
+  "barangays": ["Barangay 01", "Barangay 02", "Barangay 03", "Barangay 04", "Barangay 05", "Barangay 06", "Barangay 07", "Barangay 08", "Barangay 09", "Barangay 10", "Barangay 11", "Barangay 12"],
+  "means": [12.83, 10.74, 8.52, 7.3, 6.91, 5.87, 5.78, 5.57, 5.13, 4.91, 4.43, 4.22],
+  "n_barangays": 127,
+  "n_weeks": 23
+}

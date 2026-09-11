@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Zander Carpio, Mathematics and Quantitative Modelling</title>
+<meta name="description" content="BS Mathematics at the University of the Philippines Baguio. Epidemic modelling, geospatial disease surveillance, and computational number theory. Seeking actuarial and data science roles.">
+<meta name="author" content="Zander Carpio">
+<meta property="og:title" content="Zander Carpio, Mathematics and Quantitative Modelling">
+<meta property="og:description" content="Epidemic modelling, geospatial disease surveillance, and computational number theory.">
+<meta property="og:type" content="website">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<script>document.documentElement.className += ' js';</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+<nav class="nav">
+  <div class="wrap nav-inner">
+    <span class="nav-name">Zander Carpio</span>
+    <div class="nav-right">
+      <div class="nav-links">
+        <a href="#work">Work</a>
+        <a href="#experience">Experience</a>
+        <a href="#toolkit">Toolkit</a>
+        <a href="#about">About</a>
+        <a href="#contact">Contact</a>
+      </div>
+      <button id="theme-toggle" class="theme-toggle" type="button" aria-label="Switch between light and dark">
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>
+        </svg>
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+</nav>
+
+<header class="hero">
+  <div id="hero-curve" class="hero-curve" aria-hidden="true"></div>
+  <div class="wrap hero-inner">
+    <div class="mono-label">Baguio City, Philippines</div>
+    <h1>Zander Carpio</h1>
+    <p class="lede">
+      BS Mathematics at the <strong>University of the Philippines Baguio</strong>,
+      graduating 2027, on a national <strong>DOST-SEI merit scholarship</strong>
+      and most recently a statistics intern at the
+      <strong>Philippine Statistics Authority</strong>. I build and verify
+      quantitative models: epidemic dynamics, geospatial disease surveillance,
+      and computational number theory. I care more about whether a result is
+      <strong>checkable</strong> than whether it arrived quickly.
+    </p>
+
+    <div class="badges">
+      <span class="badge">DOST-SEI Undergraduate Scholar</span>
+      <span class="badge">Philippine Statistics Authority intern</span>
+      <span class="badge alt">Open to actuarial and data science roles</span>
+    </div>
+
+    <div class="actions">
+      <a class="btn btn-primary" href="#work">
+        See the work
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </a>
+      <a class="btn" href="mailto:zandercarpio.ph@gmail.com">Email me</a>
+            <a class="btn" href="https://www.linkedin.com/in/zander-carpio/">LinkedIn</a>
+    </div>
+
+    <div class="stats reveal">
+      <div class="stat">
+        <div class="num"><span data-count="2353">0</span></div>
+        <div class="lbl">Lines of modelling code in R, MATLAB and C</div>
+      </div>
+      <div class="stat">
+        <div class="num"><span data-count="127">0</span></div>
+        <div class="lbl">Barangays in the dengue surveillance analysis</div>
+      </div>
+      <div class="stat">
+        <div class="num"><span data-count="23">0</span></div>
+        <div class="lbl">Surveillance weeks reconstructed and checked</div>
+      </div>
+      <div class="stat">
+        <div class="num"><span data-count="797">0</span></div>
+        <div class="lbl">Lines in the cholera Shiny application</div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<section id="work">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="mono-label">Selected work</div>
+      <h2>Models I built, and the checks that made me trust them</h2>
+      <p>
+        Every figure below is produced from the underlying model or dataset by
+        <code>scripts/make_figures.R</code> in this repository. The first two
+        projects run live in your browser, so you can move the parameters
+        yourself rather than take my word for the shape of the curve.
+      </p>
+    </div>
+
+    <!-- ============================== dengue ============================== -->
+    <article class="project reveal">
+      <div class="project-body">
+        <h3>Dengue surveillance, Baguio City</h3>
+        <div class="meta">R &middot; QGIS &middot; Spatiotemporal analysis</div>
+        <p>
+          Barangay-level dengue surveillance across <strong>127 barangays</strong>
+          and <strong>23 reporting weeks</strong>, joined on PSGC codes and mapped
+          in QGIS. The series resolves a sharp outbreak peaking in the week of
+          9 to 15 January, decaying from 1,778 reported cases to fewer than 70
+          within six weeks, then holding at a low baseline for the rest of the year.
+        </p>
+        <p>
+          Cleaning mattered more than modelling. Two things in this dataset will
+          quietly produce wrong answers: the files are labelled as incidence per
+          1,000 but hold <strong>integer case counts</strong>, and several barangay
+          names contain commas, so any naive comma split silently undercounts. My
+          first cross-check reported 1,534 cases for a week whose true total was
+          1,778. I only caught it because the two routes disagreed.
+        </p>
+        <p class="note">
+          Surveillance data obtained from a health office and not redistributed.
+          Only derived aggregates are published here, and barangay names are
+          withheld. The finding is the steepness of the gradient, which does not
+          require naming which communities carry it.
+        </p>
+        <div class="tags">
+          <span class="tag">R</span><span class="tag">dplyr</span>
+          <span class="tag">ggplot2</span><span class="tag">QGIS</span>
+          <span class="tag">PSGC joins</span>
+        </div>
+      </div>
+
+      <div class="project-media">
+        <div class="lab">
+          <div class="lab-bar">
+            <span class="lab-title">Explore the data</span>
+            <div class="seg" id="dengue-seg">
+              <button type="button" data-view="weeks" aria-pressed="true">By week</button>
+              <button type="button" data-view="brgy" aria-pressed="false">By barangay</button>
+            </div>
+          </div>
+          <div class="lab-plot plot-host">
+            <div id="dengue-plot"></div>
+            <div id="dengue-tip" class="tip"></div>
+          </div>
+          <div class="readout">
+            <div>Hover any point for the exact figure.</div>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <!-- ======================== compartmental lab ======================== -->
+    <article class="project flip reveal">
+      <div class="project-body">
+        <h3>Compartmental epidemic models</h3>
+        <div class="meta">R &middot; deSolve &middot; Shiny &middot; Live in browser</div>
+        <p>
+          SIR and SEIR systems with mass-action incidence, integrated with
+          <code>deSolve</code> in R and wrapped in Shiny so the parameters can be
+          moved and the epidemic curve re-solved live.
+        </p>
+        <p>
+          The version on this page is the same mathematics reimplemented from
+          scratch in JavaScript with a <strong>fourth-order Runge-Kutta</strong>
+          integrator. Building it twice, in two languages, is the point: when both
+          produce the same curve, the dynamics belong to the model rather than to
+          the solver.
+        </p>
+        <p>
+          Switch to SEIR and watch what a latent compartment does. The same
+          transmission pressure yields a later, lower, broader peak once people
+          spend time exposed but not yet infectious.
+        </p>
+        <div class="tags">
+          <span class="tag">R</span><span class="tag">deSolve</span>
+          <span class="tag">Shiny</span><span class="tag">JavaScript</span>
+          <span class="tag">RK4</span>
+        </div>
+      </div>
+
+      <div class="project-media">
+        <div class="lab" id="lab">
+          <div class="lab-bar">
+            <span class="lab-title">Live solver</span>
+            <div class="seg">
+              <button type="button" data-model="sir" aria-pressed="true">SIR</button>
+              <button type="button" data-model="seir" aria-pressed="false">SEIR</button>
+            </div>
+          </div>
+          <div class="lab-plot"><div id="lab-plot"></div></div>
+          <div class="readout"><div class="legend" id="lab-legend"></div></div>
+          <div class="lab-controls">
+            <div class="ctl">
+              <label for="p-beta">Transmission &beta; <span class="val" id="v-beta">0.00030</span></label>
+              <input type="range" id="p-beta" min="0.00005" max="0.0008" step="0.00001" value="0.0003">
+            </div>
+            <div class="ctl">
+              <label for="p-gamma">Recovery &gamma; <span class="val" id="v-gamma">0.100</span></label>
+              <input type="range" id="p-gamma" min="0.02" max="0.4" step="0.005" value="0.1">
+            </div>
+            <div class="ctl" id="ctl-sigma" style="visibility:hidden">
+              <label for="p-sigma">Latent rate &sigma; <span class="val" id="v-sigma">0.20</span></label>
+              <input type="range" id="p-sigma" min="0.05" max="1" step="0.01" value="0.2">
+            </div>
+          </div>
+          <div class="readout">
+            <div>Basic reproduction number <b id="r-r0">0</b></div>
+            <div>Peak infected <b id="r-peak">0</b></div>
+            <div>Peak day <b id="r-day">0</b></div>
+            <div>Attack rate <b id="r-attack">0%</b></div>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <!-- ============================== cholera ============================= -->
+    <article class="project reveal">
+      <div class="project-body">
+        <h3>Cholera transmission with an environmental reservoir</h3>
+        <div class="meta">R &middot; MATLAB &middot; Shiny</div>
+        <p>
+          An SEIRB model in which cholera spreads two ways at once: directly
+          between people, and indirectly through a reservoir of bacteria in
+          contaminated water. The bacterial compartment is what makes the model
+          worth building, because it is the one an intervention can actually act on.
+        </p>
+        <p>
+          Implemented as a <strong>797-line Shiny application</strong> in R with
+          fourteen tunable parameters, and independently again in MATLAB. Two
+          implementations of one system is not duplicated effort, it is the
+          cheapest way to find out that the solver is not inventing the dynamics.
+        </p>
+        <div class="tags">
+          <span class="tag">R</span><span class="tag">MATLAB</span>
+          <span class="tag">Shiny</span><span class="tag">deSolve</span>
+          <span class="tag">Numerical ODEs</span>
+        </div>
+      </div>
+      <div class="project-media">
+        <figure class="panel">
+          <img src="assets/img/fig-cholera.png" alt="Cholera SEIRB model curves over 400 days, showing susceptible, exposed, infectious and recovered compartments.">
+          <figcaption>
+            Solved at the application's own default parameters, including
+            recruitment &Lambda; = 9.19 and an environmental carrying capacity K = 500.
+          </figcaption>
+        </figure>
+      </div>
+    </article>
+
+    <!-- ============================= kaprekar ============================ -->
+    <article class="project flip reveal">
+      <div class="project-body">
+        <h3>Kaprekar triples, undergraduate thesis</h3>
+        <div class="meta">Number theory &middot; PARI/GP &middot; LaTeX</div>
+        <p>
+          Extending Iannucci and Foster's 2005 work on Kaprekar triples: integers
+          whose cube splits into three blocks that sum back to the original number.
+          8 is the smallest, because 8<sup>3</sup> = 512 splits as 5, 1 and 2.
+        </p>
+        <p>
+          The central result turns an infinite search into a finite one by proving
+          every triple is a root of a congruence. That bounds the count at four for
+          each power of ten and rules out eleven residue classes entirely.
+        </p>
+        <p>
+          The project runs on a rule I set myself:
+          <strong>no result counts until two independently written programs agree</strong>.
+          It has earned its keep twice. It caught a counting error in my own code
+          that had understated a maximum by a third, and the chart here, written
+          fresh in R, reproduces the counts my PARI/GP work had already established.
+        </p>
+        <div class="tags">
+          <span class="tag">PARI/GP</span><span class="tag">R</span>
+          <span class="tag">LaTeX</span><span class="tag">Primality proving</span>
+        </div>
+      </div>
+      <div class="project-media">
+        <figure class="panel">
+          <img src="assets/img/fig-kaprekar.png" alt="Bar chart of the number of Kaprekar triples below each power of ten, from n equals one to five.">
+          <figcaption>
+            Counted by direct enumeration in R, exact while cubes stay below
+            2<sup>53</sup>. The single triple below 10 is 8; below 10,000 there are nine.
+          </figcaption>
+        </figure>
+      </div>
+    </article>
+
+    <!-- ============================= kuramoto ============================ -->
+    <article class="project reveal">
+      <div class="project-body">
+        <h3>Kuramoto synchronisation</h3>
+        <div class="meta">Python &middot; Jupyter &middot; R</div>
+        <p>
+          Coupled-oscillator dynamics: a population of oscillators, each with its
+          own natural frequency, pulled toward one another by a coupling term.
+          Below a critical coupling they drift incoherently. Above it they lock
+          into a collective rhythm, and the transition is sharp.
+        </p>
+        <p>
+          Originally studied in a Python notebook; the sweep shown here was
+          recomputed in R so that the whole site regenerates from one script.
+        </p>
+        <div class="tags">
+          <span class="tag">Python</span><span class="tag">NumPy</span>
+          <span class="tag">Jupyter</span><span class="tag">Nonlinear dynamics</span>
+        </div>
+      </div>
+      <div class="project-media">
+        <figure class="panel">
+          <img src="assets/img/fig-kuramoto.png" alt="Order parameter rising sharply against coupling strength, showing the Kuramoto synchronisation transition.">
+          <figcaption>
+            Order parameter r against coupling strength K for 400 oscillators
+            with Cauchy-distributed natural frequencies.
+          </figcaption>
+        </figure>
+      </div>
+    </article>
+  </div>
+</section>
+
+<section id="experience" class="tinted">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="mono-label">Experience</div>
+      <h2>Where I have worked</h2>
+    </div>
+
+    <div class="reveal">
+      <div class="entry">
+        <div class="when">Jun to Jul 2026</div>
+        <div>
+          <h3>Intern, Statistical Operations and Coordination Division</h3>
+          <div class="org">Philippine Statistics Authority, Baguio City</div>
+          <p>
+            Statistical operations, data visualisation, and coordination work
+            inside the Philippines' national statistics agency, the body
+            responsible for official statistics, the census, and civil
+            registration. Two months of working with survey and administrative
+            data as it actually arrives, rather than as a cleaned teaching set.
+          </p>
+        </div>
+      </div>
+
+      <div class="entry">
+        <div class="when">Sep 2025 to present</div>
+        <div>
+          <h3>Peer Mentor, Learning Resource Center</h3>
+          <div class="org">University of the Philippines Baguio, Contract</div>
+          <p>Mentoring undergraduates through mathematics coursework.</p>
+        </div>
+      </div>
+
+      <div class="entry">
+        <div class="when">Jul 2021 to Jul 2024</div>
+        <div>
+          <h3>Mathematics Tutor</h3>
+          <div class="org">Freelance, Hybrid</div>
+          <p>Three years tutoring mathematics at secondary and lower undergraduate level.</p>
+        </div>
+      </div>
+
+      <div class="entry">
+        <div class="when">Jul 2022 to present</div>
+        <div>
+          <h3>Social Media Manager</h3>
+          <div class="org">Freelance, Remote</div>
+          <p>
+            Content production and campaign management for small businesses
+            across several industries, run alongside full-time study.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="sec-head reveal" style="margin-top:70px">
+      <div class="mono-label">Education</div>
+      <h2>Where I studied</h2>
+    </div>
+
+    <div class="reveal">
+      <div class="entry">
+        <div class="when">Aug 2023 to 2027</div>
+        <div>
+          <h3>BS Mathematics</h3>
+          <div class="org">University of the Philippines Baguio</div>
+          <p>
+            <strong>DOST-SEI Undergraduate Scholar</strong>, a competitive national
+            merit scholarship awarded by the Philippine Department of Science and
+            Technology to students in science and mathematics. Pure and applied
+            mathematics, with an undergraduate thesis in number theory.
+          </p>
+        </div>
+      </div>
+
+      <div class="entry">
+        <div class="when">2017 to 2023</div>
+        <div>
+          <h3>Secondary Education</h3>
+          <div class="org">Aurora National Science High School</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="toolkit">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="mono-label">Toolkit</div>
+      <h2>What I use, and how I work</h2>
+    </div>
+    <div class="grid reveal">
+      <div class="card">
+        <h3>Languages and tools</h3>
+        <ul>
+          <li><strong>R</strong>, with deSolve, Shiny, ggplot2, dplyr and tidyr</li>
+          <li><strong>Python</strong>, with NumPy and Jupyter</li>
+          <li><strong>MATLAB</strong>, for numerical modelling</li>
+          <li><strong>QGIS</strong>, for geospatial joins and thematic maps</li>
+          <li><strong>JavaScript</strong>, SVG and numerical methods in the browser</li>
+          <li><strong>C</strong>, <strong>PARI/GP</strong>, <strong>LaTeX</strong>, <strong>Excel</strong></li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Mathematics</h3>
+        <ul>
+          <li>Real Analysis</li>
+          <li>Complex Analysis</li>
+          <li>Analytic Number Theory</li>
+          <li>Operations Research</li>
+          <li>Physics</li>
+          <li>Accounting</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>How I work</h3>
+        <ul>
+          <li>Cross-check every result against a second, independently written implementation</li>
+          <li>Treat a reported number as a claim until it has been reproduced</li>
+          <li>Keep raw data out of version control and regenerate every figure from script</li>
+          <li>Label what is proved separately from what is only computed</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="about" class="tinted">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="mono-label">About</div>
+      <h2>A short version</h2>
+    </div>
+    <div class="prose reveal">
+      <p>
+        I am a mathematics undergraduate at UP Baguio, supported by a
+        <strong>DOST-SEI scholarship</strong> and graduating in 2027. My
+        coursework has run from real and complex analysis through operations
+        research. My applied work has mostly been epidemiological: compartmental
+        models of cholera and dengue, and the surveillance data that comes with them.
+      </p>
+      <p>
+        Interning at the <strong>Philippine Statistics Authority</strong> taught
+        me the part of quantitative work that textbooks leave out. Data arrives
+        inconsistently labelled, joins fail on encoding, and the interesting
+        question is usually whether the number in front of you means what its
+        column header claims. The dengue files on this page are labelled as rates
+        and contain counts. That is not an unusual case, it is the normal one.
+      </p>
+      <div class="pull">
+        Nothing counts as a result until two independently written programs agree
+        on it.
+      </div>
+      <p>
+        My thesis pushed that instinct further. Working on Kaprekar triples I
+        adopted that rule, and it caught a real error in my own work that had
+        gone unnoticed for months. It is a slow way to work and I would not give
+        it up, because the alternative is confidently shipping a number that
+        happens to be wrong.
+      </p>
+      <p>
+        I am looking for <strong>actuarial and data science roles</strong> where
+        that combination is useful: enough mathematics to know what a model
+        assumes, and enough scepticism to check whether the data supports it.
+      </p>
+    </div>
+  </div>
+</section>
+
+<section id="contact">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="mono-label">Contact</div>
+      <h2>Get in touch</h2>
+      <p>
+        Open to internships, graduate roles, and research collaboration, in the
+        Philippines or remote.
+      </p>
+    </div>
+    <div class="actions reveal" style="margin-top:0">
+      <a class="btn btn-primary" href="mailto:zandercarpio.ph@gmail.com">zandercarpio.ph@gmail.com</a>
+            <a class="btn" href="https://www.linkedin.com/in/zander-carpio/">LinkedIn</a>
+      <!-- TODO: confirm the final GitHub username before launch -->
+      <a class="btn" href="https://github.com/zandercarpioph-create">GitHub</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap row">
+    <p>Zander Carpio, Baguio City, Philippines</p>
+    <p>Static site, no framework. Every figure regenerated from source by <code>scripts/make_figures.R</code>.</p>
+  </div>
+</footer>
+
+<script src="assets/js/app.js"></script>
+</body>
+</html>

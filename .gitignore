@@ -1,0 +1,7 @@
+# Surveillance data is not ours to redistribute -- figures are generated
+# locally by scripts/make_figures.R and only the PNGs are committed.
+*.csv
+*.xlsx
+*.qgz
+.DS_Store
+Thumbs.db

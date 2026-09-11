@@ -1,0 +1,243 @@
+# Regenerates every figure and data file the portfolio site needs, from the
+# underlying models and datasets. Nothing on the site is hand-drawn.
+#
+#   Rscript scripts/make_figures.R
+#
+# Raw surveillance data is read from a local path and never committed; only the
+# derived aggregates written into assets/ ship with the repository.
+
+suppressPackageStartupMessages({
+  library(deSolve); library(ggplot2); library(dplyr); library(tidyr)
+})
+
+ROOT <- if (dir.exists("assets")) normalizePath(".") else "C:/Users/Zander/Claude Code/portfolio"
+OUT  <- file.path(ROOT, "assets", "img")
+DAT  <- file.path(ROOT, "assets", "data")
+DATA <- "C:/Users/Zander/Downloads/Files/06_Data-Spreadsheets"
+dir.create(OUT, showWarnings = FALSE, recursive = TRUE)
+dir.create(DAT, showWarnings = FALSE, recursive = TRUE)
+
+ink <- "#12233a"; accent <- "#c2410c"
+base <- theme_minimal(base_size = 12) +
+  theme(panel.grid.minor = element_blank(),
+        plot.title    = element_text(face = "bold", size = 13, colour = ink),
+        plot.subtitle = element_text(size = 10, colour = "#5b6b7f"),
+        axis.title    = element_text(size = 10, colour = "#5b6b7f"),
+        legend.position = "top", legend.title = element_blank())
+
+save_fig <- function(p, name, w, h) {
+  ggsave(file.path(OUT, name), p, width = w, height = h, dpi = 150, bg = "white")
+  cat("wrote", name, "\n")
+}
+
+# =========================================================================
+# 1. SIR, parameters exactly as in basicSIRsimulation.R
+# =========================================================================
+sir <- function(t, y, p) with(as.list(c(y, p)),
+  list(c(-beta*S*I, beta*S*I - gamma*I, gamma*I)))
+
+out <- ode(c(S = 999, I = 1, R = 0), seq(0, 100, 1), sir,
+           c(beta = 0.0003, gamma = 0.1)) |> as.data.frame()
+
+p1 <- out |> pivot_longer(-time) |>
+  mutate(name = factor(name, c("S","I","R"), c("Susceptible","Infected","Recovered"))) |>
+  ggplot(aes(time, value, colour = name)) +
+  geom_line(linewidth = 1.1) +
+  scale_colour_manual(values = c("#2563eb", accent, "#059669")) +
+  labs(title = "SIR model with mass-action incidence",
+       subtitle = "beta = 0.0003, gamma = 0.1, N = 1000",
+       x = "Day", y = "Individuals") + base
+save_fig(p1, "fig-sir.png", 7, 4.2)
+
+# =========================================================================
+# 2. SEIR, structure as in ShinyApp_SEIRmodel.R
+# =========================================================================
+seir <- function(t, y, p) with(as.list(c(y, p)),
+  list(c(-beta*S*E, beta*S*E - sigma*E, sigma*E - gamma*I, gamma*I)))
+
+out2 <- ode(c(S = 999, E = 1, I = 0, R = 0), seq(0, 150, 1), seir,
+            c(beta = 0.0004, sigma = 0.2, gamma = 0.1)) |> as.data.frame()
+
+p2 <- out2 |> pivot_longer(-time) |>
+  mutate(name = factor(name, c("S","E","I","R"),
+                       c("Susceptible","Exposed","Infected","Recovered"))) |>
+  ggplot(aes(time, value, colour = name)) +
+  geom_line(linewidth = 1.1) +
+  scale_colour_manual(values = c("#2563eb", "#d97706", accent, "#059669")) +
+  labs(title = "SEIR model with a latent compartment",
+       subtitle = "The exposed class delays and flattens the infection peak",
+       x = "Day", y = "Individuals") + base
+save_fig(p2, "fig-seir.png", 7, 4.2)
+
+# =========================================================================
+# 3. Cholera SEIRB, equations and defaults taken from Final_Cholera_Shiny.R
+#    Environmental transmission through a bacterial reservoir B.
+# =========================================================================
+cholera <- function(t, y, p) with(as.list(c(y, p)), {
+  inf_env    <- omega * alpha1 * S * B / K
+  inf_direct <- phi * alpha2 * S * I
+  list(c(
+    Lambda - inf_env - inf_direct - (nu + mu) * S,
+    inf_env + inf_direct - (kappa + mu) * E,
+    kappa * E - (gamma + delta + mu) * I,
+    nu * S + gamma * I - mu * R,
+    epsilon * I - (tau + eta) * B
+  ))
+})
+
+cp <- c(Lambda = 0.00913 * 1007, mu = 5.48e-5, nu = 0.02, eta = 4,
+        kappa = 0.7143, gamma = 0.2, delta = 0.02, omega = 0.00162,
+        alpha1 = 0.00015, phi = 0.0073, alpha2 = 0.00096, K = 500,
+        epsilon = 10, tau = 0.033)
+
+out3 <- ode(c(S = 1000, E = 5, I = 2, R = 0, B = 20),
+            seq(0, 400, 1), cholera, cp) |> as.data.frame()
+
+p3 <- out3 |> select(time, S, E, I, R) |> pivot_longer(-time) |>
+  mutate(name = factor(name, c("S","E","I","R"),
+                       c("Susceptible","Exposed","Infectious","Recovered"))) |>
+  ggplot(aes(time, value, colour = name)) +
+  geom_line(linewidth = 1.1) +
+  scale_colour_manual(values = c("#2563eb", "#d97706", accent, "#059669")) +
+  labs(title = "Cholera SEIRB model with an environmental reservoir",
+       subtitle = "Transmission by contaminated water as well as direct contact",
+       x = "Day", y = "Individuals") + base
+save_fig(p3, "fig-cholera.png", 7, 4.2)
+
+# =========================================================================
+# 4. Kuramoto synchronisation transition
+#    Order parameter r against coupling strength K.
+# =========================================================================
+set.seed(42)
+kuramoto_r <- function(Kc, n = 400, dt = 0.05, steps = 3000, burn = 2000) {
+  omega <- rcauchy(n, 0, 0.5)
+  theta <- runif(n, 0, 2 * pi)
+  acc <- numeric(0)
+  for (s in seq_len(steps)) {
+    z <- mean(exp(1i * theta))
+    theta <- theta + dt * (omega + Kc * Mod(z) * sin(Arg(z) - theta))
+    if (s > burn) acc <- c(acc, Mod(z))
+  }
+  mean(acc)
+}
+
+Ks <- seq(0, 4, by = 0.2)
+kur <- data.frame(K = Ks, r = vapply(Ks, kuramoto_r, numeric(1)))
+
+p4 <- ggplot(kur, aes(K, r)) +
+  geom_vline(xintercept = 1, linetype = "dashed", colour = "#94a3b8") +
+  annotate("text", x = 1.08, y = .07, label = "critical coupling",
+           hjust = 0, size = 3, colour = "#64748b") +
+  geom_line(colour = accent, linewidth = 1.1) +
+  geom_point(colour = accent, size = 2) +
+  ylim(0, 1) +
+  labs(title = "Kuramoto transition to collective synchronisation",
+       subtitle = "400 oscillators with Cauchy-distributed natural frequencies",
+       x = "Coupling strength K", y = "Order parameter r") + base
+save_fig(p4, "fig-kuramoto.png", 7, 4.2)
+
+# =========================================================================
+# 5. Kaprekar triples, counted directly
+#    k is an n-Kaprekar triple when k^3 = p*N^2 + q*N + r with k = p+q+r,
+#    N = 10^n, 0 <= q,r < N and p > 0. Cubes stay exact below 2^53, so this
+#    brute force is trustworthy up to n = 5.
+# =========================================================================
+count_triples <- function(n) {
+  N <- 10^n
+  # k must lie strictly below N; k = N satisfies the split trivially with
+  # q = r = 0 and is not counted as a triple.
+  k <- 1:(N - 1)
+  cube <- as.numeric(k)^3
+  p <- floor(cube / N^2)
+  rem <- cube - p * N^2
+  q <- floor(rem / N)
+  r <- rem - q * N
+  hit <- (p > 0) & (p + q + r == k)
+  list(count = sum(hit), members = k[hit])
+}
+
+kap <- lapply(1:5, count_triples)
+kdf <- data.frame(n = 1:5, count = vapply(kap, \(x) x$count, numeric(1)))
+for (i in 1:5) cat(sprintf("  K(10^%d) = %d  %s\n", i, kap[[i]]$count,
+                           paste(head(kap[[i]]$members, 6), collapse = ", ")))
+
+p5 <- ggplot(kdf, aes(factor(n), count)) +
+  geom_col(fill = accent, alpha = .85, width = .6) +
+  geom_text(aes(label = count), vjust = -0.55, size = 3.6, colour = ink) +
+  ylim(0, max(kdf$count) * 1.2) +
+  labs(title = "Kaprekar triples below each power of ten",
+       subtitle = "Counted by direct enumeration; exact while cubes stay under 2^53",
+       x = "n, where N = 10^n", y = "Number of triples") + base
+save_fig(p5, "fig-kaprekar.png", 7, 4.2)
+
+# =========================================================================
+# 6. Dengue surveillance, Baguio City
+# =========================================================================
+wk <- list.files(DATA, pattern = "^INC PER 1000 - [A-Z]", full.names = TRUE)
+mon <- c(Jan=1,Feb=2,Mar=3,Apr=4,May=5,Jun=6,Jul=7,Aug=8,Sep=9,Oct=10,Nov=11,Dec=12)
+
+rows <- lapply(wk, function(f) {
+  lab <- sub("[.]csv$", "", sub("^.*INC PER 1000 - ", "", f))
+  tok <- strsplit(lab, "[ -]+")[[1]]
+  m <- mon[substr(tok[1], 1, 3)]; d <- suppressWarnings(as.integer(tok[2]))
+  if (is.na(m) || is.na(d)) return(NULL)
+  v <- read.csv(f, stringsAsFactors = FALSE)
+  i <- suppressWarnings(as.numeric(v$INC))
+  data.frame(label = lab, order = m * 100 + d,
+             total = sum(i, na.rm = TRUE),
+             affected = sum(i > 0, na.rm = TRUE))
+}) |> bind_rows() |> arrange(order)
+rows$label <- factor(rows$label, levels = rows$label)
+
+p6 <- ggplot(rows, aes(label, total, group = 1)) +
+  geom_area(fill = accent, alpha = .13) +
+  geom_line(colour = accent, linewidth = 1.1) +
+  geom_point(colour = accent, size = 1.8) +
+  labs(title = "Baguio City dengue cases by surveillance week",
+       subtitle = sprintf("Reported cases across %d barangays over %d surveillance weeks",
+                          nrow(read.csv(wk[1])), nrow(rows)),
+       x = NULL, y = "Reported cases") +
+  base + theme(axis.text.x = element_text(angle = 45, hjust = 1, size = 7.5))
+save_fig(p6, "fig-dengue-weekly.png", 8, 4.4)
+
+brgy <- lapply(wk, function(f) {
+  v <- read.csv(f, stringsAsFactors = FALSE)
+  data.frame(BRGY = v$BRGY, INC = suppressWarnings(as.numeric(v$INC)))
+}) |> bind_rows() |> group_by(BRGY) |>
+  summarise(mean_inc = mean(INC, na.rm = TRUE), .groups = "drop") |>
+  arrange(desc(mean_inc))
+
+# Barangay names are deliberately withheld from everything that ships. The
+# analytical point is the steepness of the gradient, not which communities are
+# named as hotspots, so ranked labels carry the finding without the exposure.
+brgy_pub <- brgy |> head(15) |>
+  mutate(label = sprintf("Barangay %02d", row_number()))
+
+p7 <- brgy_pub |>
+  ggplot(aes(reorder(label, mean_inc), mean_inc)) +
+  geom_col(fill = accent, alpha = .85, width = .72) + coord_flip() +
+  labs(title = "Dengue burden gradient across barangays",
+       subtitle = "Mean reported cases per surveillance week, fifteen highest, names withheld",
+       x = NULL, y = "Mean reported cases per week") +
+  base + theme(axis.text.y = element_text(size = 8))
+save_fig(p7, "fig-dengue-brgy.png", 8.6, 5)
+
+# ---- aggregates for the interactive chart on the site --------------------
+# Only these derived numbers leave the machine; the raw files stay put.
+jstr <- function(x) paste0('"', gsub('"', '', x), '"')
+jnum <- function(x) formatC(x, format = "f", digits = 2, drop0trailing = TRUE)
+
+# Ranked labels only. No barangay name reaches the published data file.
+top <- head(brgy, 12) |> mutate(label = sprintf("Barangay %02d", row_number()))
+json <- paste0(
+  '{\n  "weeks": [', paste(jstr(as.character(rows$label)), collapse = ", "), '],\n',
+  '  "cases": [', paste(jnum(rows$total), collapse = ", "), '],\n',
+  '  "barangays": [', paste(jstr(top$label), collapse = ", "), '],\n',
+  '  "means": [', paste(jnum(top$mean_inc), collapse = ", "), '],\n',
+  '  "n_barangays": ', nrow(read.csv(wk[1])), ',\n',
+  '  "n_weeks": ', nrow(rows), '\n}'
+)
+writeLines(json, file.path(DAT, "dengue.json"))
+cat("wrote dengue.json\n")
+
+cat("\nall figures and data written\n")
