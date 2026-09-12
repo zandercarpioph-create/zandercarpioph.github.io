@@ -232,6 +232,9 @@ section.tinted { background: var(--bg-alt); border-block: 1px solid var(--line-s
   vertical-align: middle;
 }
 .project-body p { margin: 0 0 15px; color: var(--muted); }
+.project-body p.byline {
+  font-size: .86rem; color: var(--faint); margin: -4px 0 15px;
+}
 .project-body p.note {
   font-size: .875rem; color: var(--faint);
   border-left: 2px solid var(--line); padding-left: 13px;

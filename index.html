@@ -330,36 +330,59 @@
     <!-- ============================== cholera ============================= -->
     <article class="project flip reveal">
       <div class="project-body">
-        <h3>Cholera transmission with an environmental reservoir</h3>
-        <div class="meta"><span class="yr">May 2026</span> <span>R &middot; MATLAB &middot; Shiny</span></div>
+        <h3>Cholera under dual transmission, vaccination and disinfection</h3>
+        <div class="meta"><span class="yr">May 2026</span> <span>MATLAB &middot; R &middot; Stability analysis</span></div>
+        <p class="byline">
+          Four-author paper with A. G. C. Alilio, J. M. Anggaco and K. G. Canor,
+          Department of Mathematics and Computer Science, UP Baguio.
+        </p>
         <p>
           An SEIRB model in which cholera spreads two ways at once: directly
-          between people, and indirectly through a reservoir of bacteria in
-          contaminated water. The bacterial compartment is what makes the model
-          worth building, because it is the one an intervention can actually act on.
+          between people, and indirectly through a reservoir of <em>Vibrio
+          cholerae</em> in contaminated water. We extended a published basis
+          model by adding an <strong>exposed compartment</strong> for the
+          incubation delay before an infected person becomes infectious.
         </p>
         <p>
-          Implemented as a <strong>797-line Shiny application</strong> in R with
-          fourteen tunable parameters, and independently again in MATLAB. Two
-          implementations of one system is not duplicated effort, it is the
-          cheapest way to find out that the solver is not inventing the dynamics.
+          The model was shown well-posed, both equilibria were derived, and the
+          basic reproduction number came from the <strong>next generation
+          matrix</strong>. The disease-free equilibrium is locally asymptotically
+          stable when R<sub>0</sub> &lt; 1 and unstable above it, with MATLAB
+          <code>ode45</code> runs supporting the analysis.
         </p>
-        <a class="repo-link" href="https://github.com/zandercarpioph-create/epidemic-modelling">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 6l-6 6 6 6M16 6l6 6-6 6"/></svg>
-          Read both implementations
+        <p>
+          The result worth reporting is that the structural change moved the
+          policy conclusion. The basis model emphasised route and environmental
+          control; once the exposed compartment was added,
+          <strong>vaccination became the strongest lever on R<sub>0</sub></strong>,
+          with disinfection supporting it by clearing the reservoir. Changing
+          how a model is built changed which intervention it recommends.
+        </p>
+        <p class="note">
+          The figure uses the model as revised after submission, not as printed.
+          Review found the submitted version had unbounded demography, driving
+          the population to 167 times its starting size, and an environmental
+          contact rate implying one exposure to contaminated water every 617
+          days. The revision fixes both and adds waning immunity. That work was
+          AI-assisted, on the same terms as this site.
+        </p>
+        <a class="repo-link" href="assets/paper/cholera-dual-transmission.pdf">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>
+          Read the paper
         </a>
         <div class="tags">
-          <span class="tag">R</span><span class="tag">MATLAB</span>
-          <span class="tag">Shiny</span><span class="tag">deSolve</span>
-          <span class="tag">Numerical ODEs</span>
+          <span class="tag">MATLAB</span><span class="tag">R</span>
+          <span class="tag">Next generation matrix</span>
+          <span class="tag">Stability analysis</span>
         </div>
       </div>
       <div class="project-media">
         <figure class="panel">
-          <img src="assets/img/fig-cholera.png" alt="Cholera SEIRB model curves over 400 days, showing susceptible, exposed, infectious and recovered compartments.">
+          <img src="assets/img/fig-cholera.png" alt="Infectious individuals over one year on a log scale under three control levels, with the strongest control decaying immediately while the others produce large outbreaks.">
           <figcaption>
-            Solved at the application's own default parameters, including
-            recruitment &Lambda; = 9.19 and an environmental carrying capacity K = 500.
+            Each scenario starts at its own disease-free equilibrium, otherwise
+            R<sub>0</sub> describes a state the simulation never occupies. The
+            values reproduce the paper's own to three decimals.
           </figcaption>
         </figure>
       </div>

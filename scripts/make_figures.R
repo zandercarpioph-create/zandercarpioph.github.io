@@ -73,36 +73,64 @@ save_fig(p2, "fig-seir.png", 7, 4.2)
 # 3. Cholera SEIRB, equations and defaults taken from Final_Cholera_Shiny.R
 #    Environmental transmission through a bacterial reservoir B.
 # =========================================================================
+# Post-review equations: standard incidence for the direct route, stationary
+# demography (Lambda = mu*N0), and waning immunity. The submitted version used
+# mass action with Lambda = 9.19, which drove the population to 167 times its
+# starting size and made the endemic case partly a demographic artefact.
 cholera <- function(t, y, p) with(as.list(c(y, p)), {
-  inf_env    <- omega * alpha1 * S * B / K
-  inf_direct <- phi * alpha2 * S * I
+  N <- S + E + I + R
+  inf_d <- beta_h * S * I / N
+  inf_e <- beta_e * S * B / K
   list(c(
-    Lambda - inf_env - inf_direct - (nu + mu) * S,
-    inf_env + inf_direct - (kappa + mu) * E,
+    Lam + theta * R - inf_d - inf_e - (nu + mu) * S,
+    inf_d + inf_e - (kappa + mu) * E,
     kappa * E - (gamma + delta + mu) * I,
-    nu * S + gamma * I - mu * R,
+    nu * S + gamma * I - (mu + theta) * R,
     epsilon * I - (tau + eta) * B
   ))
 })
 
-cp <- c(Lambda = 0.00913 * 1007, mu = 5.48e-5, nu = 0.02, eta = 4,
-        kappa = 0.7143, gamma = 0.2, delta = 0.02, omega = 0.00162,
-        alpha1 = 0.00015, phi = 0.0073, alpha2 = 0.00096, K = 500,
-        epsilon = 10, tau = 0.033)
+CH_N0 <- 10000
+ch_base <- c(mu = 5.48e-5, kappa = 0.7143, gamma = 0.2, delta = 0.02,
+             theta = 9.132e-4, beta_h = 5 * 0.027422637, beta_e = 1.0,
+             K = 1e6, epsilon = 10, tau = 0.33, Lam = 5.48e-5 * CH_N0)
 
-out3 <- ode(c(S = 1000, E = 5, I = 2, R = 0, B = 20),
-            seq(0, 400, 1), cholera, cp) |> as.data.frame()
+ch_scen <- list("No control"     = c(nu = 0,     eta = 0),
+                "Weak control"   = c(nu = 2e-4,  eta = 0.1),
+                "Strong control" = c(nu = 5e-4,  eta = 0.3))
 
-p3 <- out3 |> select(time, S, E, I, R) |> pivot_longer(-time) |>
-  mutate(name = factor(name, c("S","E","I","R"),
-                       c("Susceptible","Exposed","Infectious","Recovered"))) |>
-  ggplot(aes(time, value, colour = name)) +
-  geom_line(linewidth = 1.1) +
-  scale_colour_manual(values = c("#2563eb", "#d97706", accent, "#059669")) +
-  labs(title = "Cholera SEIRB model with an environmental reservoir",
-       subtitle = "Transmission by contaminated water as well as direct contact",
-       x = "Day", y = "Individuals") + base
-save_fig(p3, "fig-cholera.png", 7, 4.2)
+ch <- lapply(names(ch_scen), function(nm) {
+  p <- c(ch_base, ch_scen[[nm]])
+  sig <- (p[["mu"]] + p[["theta"]]) / (p[["mu"]] + p[["theta"]] + p[["nu"]])
+  S0  <- sig * CH_N0
+  cc  <- p[["gamma"]] + p[["delta"]] + p[["mu"]]
+  dd  <- p[["tau"]] + p[["eta"]]
+  # next generation matrix: direct route plus waterborne route
+  R0  <- p[["beta_h"]] / cc * sig +
+         p[["beta_e"]] * p[["epsilon"]] * S0 / (p[["K"]] * cc * dd)
+  # seed at this scenario's own disease-free equilibrium, or R0 is meaningless
+  o <- ode(c(S = S0 - 7, E = 5, I = 2, R = CH_N0 - S0, B = 20),
+           seq(0, 365, 1), cholera, p) |> as.data.frame()
+  cat(sprintf("  cholera %-15s R0 = %.3f  peak I = %6.1f on day %3.0f\n",
+              nm, R0, max(o$I), o$time[which.max(o$I)]))
+  # drop the tail below the floor rather than clamping it, which would draw a
+  # false horizontal line along the bottom of a log axis
+  keep <- o$I >= 1e-2
+  data.frame(time = o$time[keep], I = o$I[keep],
+             scen = sprintf("%s  (R0 = %.2f)", nm, R0))
+}) |> bind_rows()
+ch$scen <- factor(ch$scen, levels = unique(ch$scen))
+
+p3 <- ggplot(ch, aes(time, I, colour = scen)) +
+  geom_hline(yintercept = 1, linetype = "dashed", colour = "#94a3b8") +
+  geom_line(linewidth = 1.2) +
+  scale_y_log10(breaks = c(.01, .1, 1, 10, 100, 1000),
+                labels = c("0.01", "0.1", "1", "10", "100", "1000")) +
+  scale_colour_manual(values = c(accent, "#d97706", "#0f766e")) +
+  labs(title = "Vaccination and disinfection decide whether cholera takes hold",
+       subtitle = "Infectious individuals on a log scale. Below the threshold the seeded outbreak simply dies.",
+       x = "Day", y = "Infectious individuals") + base
+save_fig(p3, "fig-cholera.png", 7.4, 4.4)
 
 # =========================================================================
 # 4. Kuramoto synchronisation transition
